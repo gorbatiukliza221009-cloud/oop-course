@@ -1,1 +1,2 @@
-﻿Console.WriteLine("Hello, World!");
+﻿using Lab01;
+Task1.Run();
