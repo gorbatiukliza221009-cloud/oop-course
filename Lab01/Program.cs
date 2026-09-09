@@ -1,2 +1,2 @@
 ﻿using Lab01;
-Task6.Run();
+Task7.Run();
