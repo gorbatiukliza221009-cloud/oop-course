@@ -1,1 +1,3 @@
-﻿Console.WriteLine("Hello, World!");
+﻿using Lab02;
+
+Task1.Run();
