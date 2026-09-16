@@ -2,7 +2,7 @@
 
 namespace Lab02
 {
-    internal class Task5
+    internal static class Task5
     {
         public static void Run()
         {
@@ -25,28 +25,11 @@ namespace Lab02
 
                 for (int i = 0; i < n; i++)
                 {
-                    for (int j = 0; j < n; j++)
-                    {
-                        if (i == j)
-                        {
-                            mainDiagonal[i] = matrix[i, j];
-                            sum1 += matrix[i, j];
-                        }
-                    }
+                    mainDiagonal[i] = matrix[i, i];
+                    sum1 += matrix[i, i];
+                    secondaryDiagonal[i] = matrix[i, n-1-i];
+                    sum2 += matrix[i, n-1-i];
                 }
-            
-            for (int i = 0; i < n; i++)
-            {
-                
-                for (int j = 0; j < n; j++)
-                {
-                    if (i + j == n - 1)
-                    {
-                        secondaryDiagonal[i] = matrix[i, j];
-                        sum2 += matrix[i, j];
-                    }
-                }
-            }
 
             Console.WriteLine($"Головна діагональ: {string.Join(", ", mainDiagonal)} (сума = {sum1})");
             Console.WriteLine($"Побічна діагональ: {string.Join(", ", secondaryDiagonal)} (сума = {sum2})");
