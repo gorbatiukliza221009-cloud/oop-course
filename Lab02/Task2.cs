@@ -2,7 +2,7 @@
 
 namespace Lab02
 {
-    internal class Task2
+    internal static class Task2
     {
         public static void Run()
         {
