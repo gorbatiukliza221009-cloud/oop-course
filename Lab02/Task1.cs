@@ -2,7 +2,7 @@
 
 namespace Lab02
 {
-    internal class Task1
+    internal static class Task1
     {
         public static void Run()
         {
@@ -32,20 +32,20 @@ namespace Lab02
                 }
             }
 
-            double average = sum / n;
+            double avg = sum / n;
 
             int aboveAverage = 0;
 
-            foreach(double weight in weights)
+            for(int i = 0; i < n; i++)
             {
-                if (weight > average)
+                if (weights[i] > avg)
                 {
                     aboveAverage++;
                 }
             }
 
             Console.WriteLine($"Кількість: {n}");
-            Console.WriteLine($"Середня вага: {average:F1} кг");
+            Console.WriteLine($"Середня вага: {avg:F1} кг");
             Console.WriteLine($"Мін /Макс: {min:F1} / {max:F1} кг");
             Console.WriteLine($"Вище середнього: {aboveAverage} з {n}");
         }
