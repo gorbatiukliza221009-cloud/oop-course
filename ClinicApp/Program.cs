@@ -20,5 +20,21 @@ internal class Program
         {
             Console.WriteLine(patient);
         }
+
+        Doctor[] doctors =
+        {
+            new Doctor("Олег", "Сидоренко", "Кардіологія", "LIC-001", "0441234567"),
+            new Doctor("Наталія", "Мороз", "Неврологія", "LIC-002", "0442345678"),
+            new Doctor("Андрій", "Власенко", "Педіатрія", "LIC-003", "0443456789"),
+        };
+
+        doctors[0].WorkEndHour = 16;
+        doctors[1].WorkStartHour = 9;
+        doctors[1].WorkEndHour = 18;
+
+        foreach (Doctor doctor in doctors)
+        {
+            Console.WriteLine(doctor);
+        }
     }
 }
