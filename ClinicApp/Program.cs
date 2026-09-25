@@ -188,16 +188,175 @@ internal class Program
             }
         }
 
-        Appointment appointment = new Appointment(patients[0].Id, doctors[0].Id, DateTime.Now.AddHours(1), 30);
+        AppointmentManager appointmentManager = new AppointmentManager(manager, doctorManager);
+        AppointmentMenu(appointmentManager, manager, doctorManager);
 
-        Console.WriteLine(appointment);
+        void AppointmentMenu(AppointmentManager appointments,
+                     PatientManager patients,
+                     DoctorManager doctors)
+        {
+            while (true)
+            {
+                Console.WriteLine("\n=== Записи ===");
+                Console.WriteLine("1 — Створити запис");
+                Console.WriteLine("2 — Майбутні записи");
+                Console.WriteLine("3 — Записи пацієнта");
+                Console.WriteLine("4 — Записи лікаря");
+                Console.WriteLine("5 — Записи на дату");
+                Console.WriteLine("6 — Скасувати запис");
+                Console.WriteLine("7 — Завершити запис");
+                Console.WriteLine("0 — Вихід");
+                Console.Write("Ваш вибір: ");
 
-        bool canceled = appointment.Cancel("Пацієнт не може прийти");
-        Console.WriteLine($"Скасовано: {canceled}");
-        Console.WriteLine(appointment);
+                string choice = Console.ReadLine()!;
 
-        bool completed = appointment.Complete();
-        Console.WriteLine($"Завершено після скасування: {completed}");
+                switch (choice)
+                {
+                    case "1":
+                        patients.DisplayAll();
+                        doctors.DisplayAll();
 
+                        Console.Write("ID пацієнта: ");
+                        if (!int.TryParse(Console.ReadLine(), out int patientId))
+                        {
+                            Console.WriteLine("Некоректний ID пацієнта.");
+                            break;
+                        }
+
+                        Console.Write("ID лікаря: ");
+                        if (!int.TryParse(Console.ReadLine(), out int doctorId))
+                        {
+                            Console.WriteLine("Некоректний ID лікаря.");
+                            break;
+                        }
+
+                        Console.Write("Дата й час (дд.мм.рррр гг:хх): ");
+                        string dateText = Console.ReadLine()!;
+
+                        if (!DateTime.TryParseExact(
+                                dateText,
+                                "dd.MM.yyyy HH:mm",
+                                System.Globalization.CultureInfo.InvariantCulture,
+                                System.Globalization.DateTimeStyles.None,
+                                out DateTime scheduledAt))
+                        {
+                            Console.WriteLine("Некоректна дата або час.");
+                            break;
+                        }
+
+                        Console.Write("Тривалість у хвилинах: ");
+                        if (!int.TryParse(Console.ReadLine(), out int duration)
+                            || duration <= 0)
+                        {
+                            Console.WriteLine("Введіть додатну кількість хвилин.");
+                            break;
+                        }
+
+                        appointments.Book(patientId, doctorId, scheduledAt, duration);
+                        break;
+
+                    case "2":
+                        Console.WriteLine("\nМайбутні записи:");
+                        appointments.DisplayList(appointments.GetUpcoming());
+                        break;
+
+                    case "3":
+                        patients.DisplayAll();
+                        Console.Write("ID пацієнта: ");
+
+                        if (int.TryParse(Console.ReadLine(), out int searchPatientId))
+                        {
+                            appointments.DisplayList(
+                                appointments.GetByPatient(searchPatientId));
+                        }
+                        else
+                        {
+                            Console.WriteLine("Некоректний ID.");
+                        }
+                        break;
+
+                    case "4":
+                        doctors.DisplayAll();
+                        Console.Write("ID лікаря: ");
+
+                        if (int.TryParse(Console.ReadLine(), out int searchDoctorId))
+                        {
+                            appointments.DisplayList(
+                                appointments.GetByDoctor(searchDoctorId));
+                        }
+                        else
+                        {
+                            Console.WriteLine("Некоректний ID.");
+                        }
+                        break;
+
+                    case "5":
+                        Console.Write("Дата (дд.мм.рррр): ");
+                        string searchDateText = Console.ReadLine()!;
+
+                        if (DateTime.TryParseExact(
+                                searchDateText,
+                                "dd.MM.yyyy",
+                                System.Globalization.CultureInfo.InvariantCulture,
+                                System.Globalization.DateTimeStyles.None,
+                                out DateTime searchDate))
+                        {
+                            appointments.DisplayList(
+                                appointments.GetByDate(searchDate));
+                        }
+                        else
+                        {
+                            Console.WriteLine("Некоректна дата.");
+                        }
+                        break;
+
+                    case "6":
+                        Console.Write("ID запису: ");
+                        if (!int.TryParse(Console.ReadLine(), out int cancelId))
+                        {
+                            Console.WriteLine("Некоректний ID.");
+                            break;
+                        }
+
+                        Console.Write("Причина скасування: ");
+                        string reason = Console.ReadLine()!;
+
+                        if (appointments.Cancel(cancelId, reason))
+                        {
+                            Console.WriteLine($"Запис [{cancelId}] скасовано.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Запис не знайдено або його вже закрито.");
+                        }
+                        break;
+
+                    case "7":
+                        Console.Write("ID запису: ");
+                        if (!int.TryParse(Console.ReadLine(), out int completeId))
+                        {
+                            Console.WriteLine("Некоректний ID.");
+                            break;
+                        }
+
+                        if (appointments.Complete(completeId))
+                        {
+                            Console.WriteLine($"Запис [{completeId}] завершено.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Запис не знайдено або його вже закрито.");
+                        }
+                        break;
+
+                    case "0":
+                        return;
+
+                    default:
+                        Console.WriteLine("Невідомий пункт меню.");
+                        break;
+                }
+            }
+        }
     }
 }
