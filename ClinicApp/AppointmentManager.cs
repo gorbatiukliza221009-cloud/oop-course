@@ -195,7 +195,7 @@ namespace ClinicApp
             string text =
                 $"[{appointment.Id}] {patientName} -> {doctorName} |"
                 + $" {appointment.ScheduledAt:dd.MM.yyyy HH:mm}-"+
-                $"{appointment.EndTime:HH:mm} | {appointment.Status}";
+                $"{appointment.EndsAt:HH:mm} | {appointment.Status}";
 
             if ( appointment.Notes.Length>0)
             {

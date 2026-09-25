@@ -68,7 +68,7 @@ namespace ClinicApp
                     {
                         _patients[j] = _patients[j + 1];
                     }
-                    _patients[_count - 1] = null;
+                    Array.Clear(_patients, _count, 1);
                     _count--;
                     return true;
                 }

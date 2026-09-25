@@ -457,5 +457,6 @@ internal class Program
             Console.WriteLine($"\nGrowablePatientManager: " +
                               $"{growable.Count} пацієнтів / {growable.Capacity} місць");
         }
+
     }
 }

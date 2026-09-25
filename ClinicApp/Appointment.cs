@@ -15,7 +15,7 @@ namespace ClinicApp
         public string Status { get; private set; }
         public string Notes { get; private set; }
 
-        public DateTime EndTime
+        public DateTime EndsAt
         {
             get { return ScheduledAt.AddMinutes(DurationMinutes); }
         }
@@ -25,7 +25,7 @@ namespace ClinicApp
             get { return ScheduledAt > DateTime.Now && Status == "Scheduled"; }
         }
 
-        public Appointment(int patientId, int doctorId, DateTime scheduledAt, int durationMinutes)
+        public Appointment(int patientId, int doctorId, DateTime scheduledAt, int durationMinutes=30)
         {
             Id = _nextId++;
             PatientId = patientId;
@@ -36,7 +36,7 @@ namespace ClinicApp
             Notes = "";
         }
 
-        public bool Cancel(string reason)
+        public bool Cancel(string reason="")
         {
             if (Status == "Scheduled")
             {
@@ -59,7 +59,7 @@ namespace ClinicApp
 
         public override string ToString()
         {
-            string text = $"[{Id}] Пацієнт #{PatientId} →  Лікар #{DoctorId} | " + $"{ScheduledAt: dd.MM.yyyy HH:mm}-{EndTime: HH:mm} | {Status}";
+            string text = $"[{Id}] Пацієнт #{PatientId} →  Лікар #{DoctorId} | " + $"{ScheduledAt:dd.MM.yyyy HH:mm}-{EndsAt:HH:mm} | {Status}";
 
             if (Notes.Length > 0)
             {
