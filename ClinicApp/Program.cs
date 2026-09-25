@@ -16,9 +16,89 @@ internal class Program
             new Patient("Марія", "Ткач")
         };
 
+        PatientManager manager = new PatientManager();
+
         foreach (Patient patient in patients)
         {
-            Console.WriteLine(patient);
+            manager.Add(patient);
+        }
+
+        PatientMenu(manager);
+
+        void PatientMenu(PatientManager patientManager)
+        {
+            while (true)
+            {
+                Console.WriteLine("\n=== Пацієнти ===");
+                Console.WriteLine("1 — Показати всіх");
+                Console.WriteLine("2 — Додати");
+                Console.WriteLine("3 — Знайти за ім'ям");
+                Console.WriteLine("4 — Видалити за ID");
+                Console.WriteLine("5 — Статистика");
+                Console.WriteLine("0 — Вихід із меню");
+                Console.Write("Ваш вибір: ");
+
+                string choice = Console.ReadLine()!;
+
+                switch (choice)
+                {
+                    case "1":
+                        patientManager.DisplayAll();
+                        break;
+
+                    case "2":
+                        Console.Write("Ім'я: ");
+                        string firstName = Console.ReadLine()!;
+                        Console.Write("Прізвище: ");
+                        string lastName = Console.ReadLine()!;
+
+                        patientManager.Add(new Patient(firstName, lastName));
+                        break;
+
+                    case "3":
+                        Console.Write("Ім'я або прізвище для пошуку: ");
+                        string query = Console.ReadLine()!;
+                        Patient[] found = patientManager.FindByName(query);
+
+                        if (found.Length == 0)
+                        {
+                            Console.WriteLine("Пацієнтів не знайдено.");
+                        }
+                        else
+                        {
+                            foreach (Patient patient in found)
+                            {
+                                Console.WriteLine(patient);
+                            }
+                        }
+                        break;
+
+                    case "4":
+                        Console.Write("ID пацієнта: ");
+                        int id = int.Parse(Console.ReadLine()!);
+
+                        if (patientManager.Remove(id))
+                        {
+                            Console.WriteLine("Пацієнта видалено.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Пацієнта з таким ID не знайдено.");
+                        }
+                        break;
+
+                    case "5":
+                        patientManager.DisplayStats();
+                        break;
+
+                    case "0":
+                        return;
+
+                    default:
+                        Console.WriteLine("Невідомий пункт меню.");
+                        break;
+                }
+            }
         }
 
         Doctor[] doctors =
