@@ -364,6 +364,7 @@ internal class Program
                 Console.WriteLine("3 — Записи");
                 Console.WriteLine("4 — Розклад на дату");
                 Console.WriteLine("5 — Звіт");
+                Console.WriteLine("6 — Тест зростаючого масиву");
                 Console.WriteLine("0 — Завершити програму");
                 Console.Write("Ваш вибір: ");
 
@@ -406,6 +407,10 @@ internal class Program
                         clinic.GenerateReport();
                         break;
 
+                    case "6":
+                        TestGrowablePatients();
+                        break;  
+
                     case "0":
                         return;
 
@@ -414,6 +419,43 @@ internal class Program
                         break;
                 }
             }
+        }
+
+        void TestGrowablePatients()
+        {
+            GrowablePatientManager growable = new GrowablePatientManager();
+            int tenthPatientId = 0;
+
+            Console.WriteLine("\n=== Тест GrowablePatientManager ===");
+            Console.WriteLine("Додаємо пацієнтів одного за одним...");
+
+            for (int i = 1; i <= 20; i++)
+            {
+                Patient patient = new Patient("Тест", $"Пацієнт{i}");
+                growable.Add(patient);
+
+                if (i == 10)
+                {
+                    tenthPatientId = patient.Id;
+                }
+            }
+
+            Console.WriteLine("\nТест пошуку:");
+
+            Patient? found = growable.FindById(tenthPatientId);
+            if (found != null)
+            {
+                Console.WriteLine($"  FindById({tenthPatientId}) → {found.FullName}");
+            }
+
+            Patient? missing = growable.FindById(999999);
+            if (missing == null)
+            {
+                Console.WriteLine("  FindById(999999) → не знайдено");
+            }
+
+            Console.WriteLine($"\nGrowablePatientManager: " +
+                              $"{growable.Count} пацієнтів / {growable.Capacity} місць");
         }
     }
 }
