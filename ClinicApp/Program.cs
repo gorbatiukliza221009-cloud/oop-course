@@ -112,9 +112,83 @@ internal class Program
         doctors[1].WorkStartHour = 9;
         doctors[1].WorkEndHour = 18;
 
+        DoctorManager doctorManager = new DoctorManager();
+
         foreach (Doctor doctor in doctors)
         {
-            Console.WriteLine(doctor);
+            doctorManager.Add(doctor);
         }
+
+        DoctorManagerMenu(doctorManager);
+
+        void DoctorManagerMenu(DoctorManager doctorManager)
+        {
+            while (true)
+            {
+                Console.WriteLine("\n=== Лікарі ===");
+                Console.WriteLine("1 — Показати всіх");
+                Console.WriteLine("2 — Додати");
+                Console.WriteLine("3 — Знайти за спеціальністю");
+                Console.WriteLine("4 — Видалити за ID");
+                Console.WriteLine("5 — Статистика");
+                Console.WriteLine("0 — Вихід із меню");
+                Console.Write("Ваш вибір: ");
+                string choice = Console.ReadLine()!;
+                switch (choice)
+                {
+                    case "1":
+                        doctorManager.DisplayAll();
+                        break;
+                    case "2":
+                        Console.Write("Ім'я: ");
+                        string firstName = Console.ReadLine()!;
+                        Console.Write("Прізвище: ");
+                        string lastName = Console.ReadLine()!;
+                        Console.Write("Спеціальність: ");
+                        string specialty = Console.ReadLine()!;
+                        doctorManager.Add(new Doctor(firstName, lastName, specialty));
+                        break;
+                    case "3":
+                        Console.Write("Спеціальність для пошуку: ");
+                        string query = Console.ReadLine()!;
+                        Doctor[] found = doctorManager.FindBySpeciality(query);
+                        if (found.Length == 0)
+                        {
+                            Console.WriteLine("Лікарів не знайдено.");
+                        }
+                        else
+                        {
+                            foreach (Doctor doctor in found)
+                            {
+                                Console.WriteLine(doctor);
+                            }
+                        }
+                        break;
+                    case "4":
+                        Console.Write("ID лікаря: ");
+                        int id = int.Parse(Console.ReadLine()!);
+                        if (doctorManager.Remove(id))
+                        {
+                            Console.WriteLine("Лікаря видалено.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Лікаря з таким ID не знайдено.");
+                        }
+                        break;
+                    case "5":
+                        doctorManager.DisplayStats();
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        Console.WriteLine("Невідомий пункт меню.");
+                        break;
+                }
+            }
+        }
+
+
+
     }
 }
