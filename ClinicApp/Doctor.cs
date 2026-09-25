@@ -2,7 +2,7 @@
 
 namespace ClinicApp
 {
-    internal class Doctor
+    public class Doctor
     {
         private static int _nextId = 1;
         public int Id { get; }
@@ -27,11 +27,7 @@ namespace ClinicApp
         }
         public bool IsAvailableNow
         {
-            get
-            {
-                int currentHour = DateTime.Now.Hour;
-                return currentHour >= WorkStartHour && currentHour < WorkEndHour;
-            }
+            get { return CanAcceptAt(DateTime.Now.Hour); }
         }
         public Doctor()
             : this("Невідомий", "Лікар", "Невідомо", "Невідомо", "0000000000")
@@ -50,6 +46,8 @@ namespace ClinicApp
             Speciality = speciality;
             LicenseNumber = licenseNumber;
             Phone = phone;
+            WorkStartHour = 8;
+            WorkEndHour = 17;
         }
         
         public bool CanAcceptAt(int hour)
@@ -68,7 +66,7 @@ namespace ClinicApp
             {
                 status = "не в робочий час";
             }
-            return $"[{Id}] {FullName} | {Speciality} | {LicenseNumber} | Тел: {Phone} | {WorkSchedule} | {status}";
+            return $"[{Id}] {FullName} | {Speciality} | {LicenseNumber} | Тел: {Phone} | {WorkSchedule} ({WorkingHoursPerDay} год) | {WorkSchedule} | {status}";
         }
 
 

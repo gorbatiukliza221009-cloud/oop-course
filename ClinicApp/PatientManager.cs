@@ -20,7 +20,7 @@ namespace ClinicApp
                 Console.WriteLine("Досягнуто ліміту пацієнтів.");
                 return;
             }
-            _patients[_count++] = patient;
+            _patients[_count] = patient;
             _count++;
 
             Console.WriteLine($"Пацієнта [{patient.Id}] {patient.FullName} додано.");
@@ -56,7 +56,7 @@ namespace ClinicApp
             {
                 if (_patients[i].FirstName.ToLower().Contains(query) || _patients[i].LastName.ToLower().Contains(query))
                 {
-                    result[resultIndex++] = _patients[i];
+                    result[resultIndex] = _patients[i];
                     resultIndex++;
                 }
             }

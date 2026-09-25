@@ -56,6 +56,7 @@ public class Patient
         DateOfBirth = dateOfBirth;
         BloodType = bloodType;
         Phone = phone;
+        Email = "";
     }
 
     public string GetAgeCategory()
