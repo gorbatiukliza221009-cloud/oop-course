@@ -188,7 +188,16 @@ internal class Program
             }
         }
 
+        Appointment appointment = new Appointment(patients[0].Id, doctors[0].Id, DateTime.Now.AddHours(1), 30);
 
+        Console.WriteLine(appointment);
+
+        bool canceled = appointment.Cancel("Пацієнт не може прийти");
+        Console.WriteLine($"Скасовано: {canceled}");
+        Console.WriteLine(appointment);
+
+        bool completed = appointment.Complete();
+        Console.WriteLine($"Завершено після скасування: {completed}");
 
     }
 }
