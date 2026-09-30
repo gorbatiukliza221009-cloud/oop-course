@@ -8,11 +8,11 @@ internal class Program
         Patient[] patients =
         {
             new Patient("Іван", "Петренко",
-                        DateTime.Today.AddYears(-41), "A+", "0501234567"),
+                        DateTime.Today.AddYears(-41), BloodType.APositive, "0501234567"),
             new Patient("Олена", "Коваль",
-                        DateTime.Today.AddYears(-33), "B-", "0672345678"),
+                        DateTime.Today.AddYears(-33), BloodType.BNegative, "0672345678"),
             new Patient("Максим", "Бойко",
-                        DateTime.Today.AddYears(-16), "O+", "0933456789"),
+                        DateTime.Today.AddYears(-16), BloodType.OPositive, "0933456789"),
             new Patient(),
             new Patient("Марія", "Ткач")
         };
@@ -49,11 +49,30 @@ internal class Program
                     case "2":
                         Console.Write("Ім'я: ");
                         string firstName = Console.ReadLine()!;
+
                         Console.Write("Прізвище: ");
                         string lastName = Console.ReadLine()!;
 
-                        clinic.Patients.Add(new Patient(firstName, lastName));
+                        Console.WriteLine("Група крові:");
+                        Console.WriteLine("0 — Невідома");
+                        Console.WriteLine("1 — A+");
+                        Console.WriteLine("2 — A-");
+                        Console.WriteLine("3 — B+");
+                        Console.WriteLine("4 — B-");
+                        Console.WriteLine("5 — AB+");
+                        Console.WriteLine("6 — AB-");
+                        Console.WriteLine("7 — O+");
+                        Console.WriteLine("8 — O-");
+                        Console.Write("Введіть номер: ");
+
+                        BloodType bloodType = (BloodType)int.Parse(Console.ReadLine()!);
+
+                        Patient newPatient = new Patient(firstName, lastName);
+                        newPatient.BloodType = bloodType;
+
+                        clinic.Patients.Add(newPatient);
                         break;
+                       
 
                     case "3":
                         Console.Write("Ім'я або прізвище для пошуку: ");
@@ -103,9 +122,9 @@ internal class Program
 
         Doctor[] doctors =
         {
-            new Doctor("Олег", "Сидоренко", "Кардіологія", "LIC-001", "0441234567"),
-            new Doctor("Наталія", "Мороз", "Неврологія", "LIC-002", "0442345678"),
-            new Doctor("Андрій", "Власенко", "Педіатрія", "LIC-003", "0443456789"),
+            new Doctor("Олег", "Сидоренко", Speciality.Cardiology, "LIC-001", "0441234567"),
+            new Doctor("Наталія", "Мороз", Speciality.Neurology, "LIC-002", "0442345678"),
+            new Doctor("Андрій", "Власенко", Speciality.Pediatrics, "LIC-003", "0443456789"),
         };
 
         doctors[0].WorkEndHour = 16;
@@ -140,17 +159,32 @@ internal class Program
                     case "1":
                         clinic.Doctors.DisplayAll();
                         break;
+
                     case "2":
                         Console.Write("Ім'я: ");
                         string firstName = Console.ReadLine()!;
+
                         Console.Write("Прізвище: ");
                         string lastName = Console.ReadLine()!;
-                        Console.Write("Спеціальність: ");
-                        string specialty = Console.ReadLine()!;
-                        clinic.Doctors.Add(new Doctor(firstName, lastName, specialty));
+
+                        Console.WriteLine("Спеціальність:");
+                        Console.WriteLine("0 — Загальна практика");
+                        Console.WriteLine("1 — Кардіологія");
+                        Console.WriteLine("2 — Неврологія");
+                        Console.WriteLine("3 — Педіатрія");
+                        Console.WriteLine("4 — Хірургія");
+                        Console.WriteLine("5 — Ортопедія");
+                        Console.WriteLine("6 — Дерматологія");
+                        Console.WriteLine("7 — Невідкладна допомога");
+                        Console.Write("Введіть номер: ");
+
+                        Speciality speciality = (Speciality)int.Parse(Console.ReadLine()!);
+
+                        clinic.Doctors.Add(new Doctor(firstName, lastName, speciality));
                         break;
+
                     case "3":
-                        Console.Write("Спеціальність для пошуку: ");
+                        Console.Write("Спеціальність англійською (наприклад Cardiology): ");
                         string query = Console.ReadLine()!;
                         Doctor[] found = clinic.Doctors.FindBySpeciality(query);
                         if (found.Length == 0)

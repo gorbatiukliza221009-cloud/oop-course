@@ -8,7 +8,7 @@ namespace ClinicApp
         public int Id { get; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Speciality { get; set; }
+        public Speciality Speciality { get; set; }
         public string LicenseNumber { get; set; }
         public string Phone { get; set; }
         public int WorkStartHour { get; set; }
@@ -30,15 +30,23 @@ namespace ClinicApp
             get { return CanAcceptAt(DateTime.Now.Hour); }
         }
         public Doctor()
-            : this("Невідомий", "Лікар", "Невідомо", "Невідомо", "0000000000")
+    : this("Невідомий", "Лікар", Speciality.General,
+           "Невідомо", "0000000000")
         {
+        }
 
-        }
-        public Doctor(string firstName, string lastName, string speciality)
-            : this(firstName, lastName, speciality, "Невідомо", "0000000000")
+        public Doctor(string firstName, string lastName, Speciality speciality)
+            : this(firstName, lastName, speciality,
+                   "Невідомо", "0000000000")
         {
         }
-        public Doctor(string firstName, string lastName, string speciality, string licenseNumber, string phone)
+
+        public Doctor(
+            string firstName,
+            string lastName,
+            Speciality speciality,
+            string licenseNumber,
+            string phone)
         {
             Id = _nextId++;
             FirstName = firstName;
@@ -49,7 +57,7 @@ namespace ClinicApp
             WorkStartHour = 8;
             WorkEndHour = 17;
         }
-        
+
         public bool CanAcceptAt(int hour)
         {
             return hour >= WorkStartHour && hour < WorkEndHour;
@@ -66,7 +74,7 @@ namespace ClinicApp
             {
                 status = "не в робочий час";
             }
-            return $"[{Id}] {FullName} | {Speciality} | {LicenseNumber} | Тел: {Phone} | {WorkSchedule} ({WorkingHoursPerDay} год) | {WorkSchedule} | {status}";
+            return $"[{Id}] {FullName} | {Speciality} | {LicenseNumber} | Тел: {Phone} | {WorkSchedule} ({WorkingHoursPerDay} год) | {status}";
         }
 
 

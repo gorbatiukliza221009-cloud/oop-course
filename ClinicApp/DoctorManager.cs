@@ -16,7 +16,7 @@ namespace ClinicApp
         {
             if (_count >= MaxDoctors)
             {
-                Console.WriteLine("Досягнуто ліміту пацієнтів.");
+                Console.WriteLine("Досягнуто ліміту лікарів.");
                 return;
             }
 
@@ -43,19 +43,25 @@ namespace ClinicApp
             int matches = 0;
 
             for (int i = 0; i < _count; i++)
-                if (_doctors[i].Speciality.ToLower().Contains(query))
+            {
+                if (_doctors[i].Speciality.ToString().ToLower().Contains(query))
+                {
                     matches++;
+                }
+            }
+
             Doctor[] result = new Doctor[matches];
             int resultIndex = 0;
 
             for (int i = 0; i < _count; i++)
             {
-                if (_doctors[i].Speciality.ToLower().Contains(query))
+                if (_doctors[i].Speciality.ToString().ToLower().Contains(query))
                 {
-                    result[resultIndex++] = _doctors[i];
+                    result[resultIndex] = _doctors[i];
                     resultIndex++;
                 }
             }
+
             return result;
         }
 
@@ -132,7 +138,7 @@ namespace ClinicApp
 
                 for (int j = 0; j < i; j++)
                 {
-                    if (_doctors[j].Speciality.ToLower() == _doctors[i].Speciality.ToLower())
+                    if (_doctors[j].Speciality == _doctors[i].Speciality)
                     {
                         alredyShown = true;
                         break;
@@ -148,7 +154,7 @@ namespace ClinicApp
 
                 for(int j = 0; j < _count; j++)
                 {
-                    if (_doctors[j].Speciality.ToLower() == _doctors[i].Speciality.ToLower())
+                    if (_doctors[j].Speciality == _doctors[i].Speciality)
                     {
                         specialityCount++;
                     }

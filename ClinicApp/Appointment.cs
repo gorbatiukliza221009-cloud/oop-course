@@ -12,7 +12,7 @@ namespace ClinicApp
 
         public DateTime ScheduledAt { get; set; }
         public int DurationMinutes { get; set; }
-        public string Status { get; private set; }
+        public AppointmentStatus Status { get; private set; }
         public string Notes { get; private set; }
 
         public DateTime EndTime
@@ -22,7 +22,7 @@ namespace ClinicApp
 
         public bool IsUpcoming
         {
-            get { return ScheduledAt > DateTime.Now && Status == "Scheduled"; }
+            get { return ScheduledAt > DateTime.Now && Status == AppointmentStatus.Scheduled; }
         }
 
         public Appointment(int patientId, int doctorId, DateTime scheduledAt, int durationMinutes)
@@ -32,15 +32,15 @@ namespace ClinicApp
             DoctorId = doctorId;
             ScheduledAt = scheduledAt;
             DurationMinutes = durationMinutes;
-            Status = "Scheduled";
+            Status = AppointmentStatus.Scheduled;
             Notes = "";
         }
 
         public bool Cancel(string reason)
         {
-            if (Status == "Scheduled")
+            if (Status == AppointmentStatus.Scheduled)
             {
-                Status = "Cancelled";
+                Status = AppointmentStatus.Cancelled;
                 Notes = reason;
                 return true;
             }
@@ -49,9 +49,9 @@ namespace ClinicApp
 
         public bool Complete()
         {
-            if (Status == "Scheduled")
+            if (Status == AppointmentStatus.Scheduled)
             {
-                Status = "Completed";
+                Status = AppointmentStatus.Completed;
                 return true;
             }
             return false;
