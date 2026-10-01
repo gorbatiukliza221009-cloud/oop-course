@@ -127,11 +127,10 @@ internal class Program
             new Doctor("Андрій", "Власенко", Speciality.Pediatrics, "LIC-003", "0443456789"),
         };
 
-        doctors[0].WorkEndHour = 16;
-        doctors[1].WorkStartHour = 9;
-        doctors[1].WorkEndHour = 18;
+        doctors[0].Schedule = new WorkSchedule(8, 16);
+        doctors[1].Schedule = new WorkSchedule(9, 18);
 
-        
+
 
         foreach (Doctor doctor in doctors)
         {
@@ -491,5 +490,21 @@ internal class Program
             Console.WriteLine($"\nGrowablePatientManager: " +
                               $"{growable.Count} пацієнтів / {growable.Capacity} місць");
         }
+
+        WorkSchedule morning = new WorkSchedule(8, 16);
+        WorkSchedule copy = morning;
+
+        Console.WriteLine($"Початковий: {morning}");
+        Console.WriteLine($"Копія: {copy}");
+
+        copy = new WorkSchedule(14, 22);
+
+        Console.WriteLine("Після зміни копії:");
+        Console.WriteLine($"Початковий: {morning}");
+        Console.WriteLine($"Копія: {copy}");
+
+        Console.WriteLine($"Працює о 10:00: {morning.Contains(10)}");
+        Console.WriteLine($"Працює о 16:00: {morning.Contains(16)}");
+        Console.WriteLine($"Працює зараз: {morning.IsNow}");
     }
 }
