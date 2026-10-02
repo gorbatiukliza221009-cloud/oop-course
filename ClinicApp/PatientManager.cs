@@ -37,7 +37,48 @@ namespace ClinicApp
             }
             return null;
         }
+        public bool TryFindById(
+    int id,
+    [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out Patient patient)
+        {
+            Patient? found = FindById(id);
 
+            if (found == null)
+            {
+                patient = null!;
+                return false;
+            }
+
+            patient = found;
+            return true;
+        }
+
+        public Patient[] FindByBloodType(BloodType bloodType)
+        {
+            int matches = 0;
+
+            for (int i = 0; i < _count; i++)
+            {
+                if (_patients[i].BloodType == bloodType)
+                {
+                    matches++;
+                }
+            }
+
+            Patient[] result = new Patient[matches];
+            int resultIndex = 0;
+
+            for (int i = 0; i < _count; i++)
+            {
+                if (_patients[i].BloodType == bloodType)
+                {
+                    result[resultIndex] = _patients[i];
+                    resultIndex++;
+                }
+            }
+
+            return result;
+        }
         public Patient[] FindByName(string name)
         {
             string query = name.ToLower();

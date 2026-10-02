@@ -36,15 +36,27 @@ namespace ClinicApp
             }
             return null;
         }
-
-        public Doctor[] FindBySpeciality(string speciality)
+        public bool TryFindById(int id, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out Doctor doctor)
         {
-            string query = speciality.ToLower();
+            Doctor? found = FindById(id);
+
+            if (found == null)
+            {
+                doctor = null!;
+                return false;
+            }
+
+            doctor = found;
+            return true;
+        }
+
+        public Doctor[] FindBySpeciality(Speciality speciality)
+        {
             int matches = 0;
 
             for (int i = 0; i < _count; i++)
             {
-                if (_doctors[i].Speciality.ToString().ToLower().Contains(query))
+                if (_doctors[i].Speciality == speciality)
                 {
                     matches++;
                 }
@@ -55,7 +67,36 @@ namespace ClinicApp
 
             for (int i = 0; i < _count; i++)
             {
-                if (_doctors[i].Speciality.ToString().ToLower().Contains(query))
+                if (_doctors[i].Speciality == speciality)
+                {
+                    result[resultIndex] = _doctors[i];
+                    resultIndex++;
+                }
+            }
+
+            return result;
+        }
+        public Doctor[] FindBySpeciality(string speciality)
+        {
+            string query = speciality.ToLower();
+            int matches = 0;
+
+            for (int i = 0; i < _count; i++)
+            {
+                if (_doctors[i].Speciality.ToString().ToLower().Contains(query) ||
+    ClinicFormatter.FormatSpeciality(_doctors[i].Speciality).ToLower().Contains(query))
+                {
+                    matches++;
+                }
+            }
+
+            Doctor[] result = new Doctor[matches];
+            int resultIndex = 0;
+
+            for (int i = 0; i < _count; i++)
+            {
+                if (_doctors[i].Speciality.ToString().ToLower().Contains(query) ||
+    ClinicFormatter.FormatSpeciality(_doctors[i].Speciality).ToLower().Contains(query))
                 {
                     result[resultIndex] = _doctors[i];
                     resultIndex++;

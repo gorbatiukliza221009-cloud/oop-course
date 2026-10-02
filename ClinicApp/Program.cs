@@ -537,6 +537,79 @@ internal class Program
         Console.WriteLine(
             $"Немає запису з індексом 0: {clinic.Appointments[0] is null}");
 
+        Console.WriteLine("\n=== Задача 4: перевантаження та out ===");
+
+        Doctor[] cardiologists =
+            clinic.Doctors.FindBySpeciality(Speciality.Cardiology);
+
+        Console.WriteLine($"Кардіологів за enum: {cardiologists.Length}");
+
+        Doctor[] foundByText =
+            clinic.Doctors.FindBySpeciality("кардіо");
+
+        Console.WriteLine($"За рядком «кардіо»: {foundByText.Length}");
+
+        DateTime demoDate = DateTime.Today;
+
+        Appointment[] byDate =
+            clinic.Appointments.GetByDate(demoDate);
+
+        Appointment[] byNumbers =
+            clinic.Appointments.GetByDate(
+                demoDate.Year, demoDate.Month, demoDate.Day);
+
+        Console.WriteLine(
+            $"Записів на сьогодні: DateTime — {byDate.Length}, " +
+            $"три числа — {byNumbers.Length}");
+
+        if (clinic.Patients.TryFindById(patients[0].Id, out Patient? foundPatient))
+        {
+            Console.WriteLine($"Знайдено пацієнта: {foundPatient.FullName}");
+        }
+        else
+        {
+            Console.WriteLine("Пацієнта не знайдено.");
+        }
+
+        if (clinic.Doctors.TryFindById(doctors[0].Id, out Doctor? foundDoctor))
+        {
+            Console.WriteLine($"Знайдено лікаря: {foundDoctor.FullName}");
+        }
+        else
+        {
+            Console.WriteLine("Лікаря не знайдено.");
+        }
+
+        if (!clinic.Patients.TryFindById(-1, out Patient? missingPatient))
+        {
+            Console.WriteLine("Пацієнта з ID -1 не знайдено.");
+        }
+
+        if (!clinic.Doctors.TryFindById(-1, out Doctor? missingDoctor))
+        {
+            Console.WriteLine("Лікаря з ID -1 не знайдено.");
+        }
+
+        Patient[] aPositivePatients =
+            clinic.Patients.FindByBloodType(BloodType.APositive);
+
+        Console.WriteLine("\nПацієнти з групою крові A+:");
+
+        foreach (Patient item in aPositivePatients)
+        {
+            Console.WriteLine(item);
+        }
+
+        string existingName =
+            clinic.Patients.FindById(patients[0].Id)?.FullName
+            ?? "не знайдено";
+
+        string missingName =
+            clinic.Patients.FindById(-1)?.FullName
+            ?? "не знайдено";
+
+        Console.WriteLine($"Наявний ID: {existingName}");
+        Console.WriteLine($"Відсутній ID: {missingName}");
         MainMenu(clinic);
     }
 }

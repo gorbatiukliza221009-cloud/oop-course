@@ -50,6 +50,10 @@ namespace ClinicApp
             Console.WriteLine($"Запис на прийом [{appointment.Id}] для пацієнта [{patient.FullName}] до лікаря [{doctor.FullName}] заплановано на {scheduledAt}.");
             return true;
         }
+        public Appointment[] GetByDate(int year, int month, int day)
+        {
+            return GetByDate(new DateTime(year, month, day));
+        }
 
         private Appointment? FindById(int id)
         {
