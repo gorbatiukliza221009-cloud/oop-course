@@ -54,15 +54,11 @@ internal class Program
                         string lastName = Console.ReadLine()!;
 
                         Console.WriteLine("Група крові:");
-                        Console.WriteLine("0 — Невідома");
-                        Console.WriteLine("1 — A+");
-                        Console.WriteLine("2 — A-");
-                        Console.WriteLine("3 — B+");
-                        Console.WriteLine("4 — B-");
-                        Console.WriteLine("5 — AB+");
-                        Console.WriteLine("6 — AB-");
-                        Console.WriteLine("7 — O+");
-                        Console.WriteLine("8 — O-");
+                        foreach (BloodType value in Enum.GetValues<BloodType>())
+                        {
+                            Console.WriteLine(
+                                $"{(int)value} — {ClinicFormatter.FormatBloodType(value)}");
+                        }
                         Console.Write("Введіть номер: ");
 
                         BloodType bloodType = (BloodType)int.Parse(Console.ReadLine()!);
@@ -167,14 +163,11 @@ internal class Program
                         string lastName = Console.ReadLine()!;
 
                         Console.WriteLine("Спеціальність:");
-                        Console.WriteLine("0 — Загальна практика");
-                        Console.WriteLine("1 — Кардіологія");
-                        Console.WriteLine("2 — Неврологія");
-                        Console.WriteLine("3 — Педіатрія");
-                        Console.WriteLine("4 — Хірургія");
-                        Console.WriteLine("5 — Ортопедія");
-                        Console.WriteLine("6 — Дерматологія");
-                        Console.WriteLine("7 — Невідкладна допомога");
+                        foreach (Speciality value in Enum.GetValues<Speciality>())
+                        {
+                            Console.WriteLine(
+                                $"{(int)value} — {ClinicFormatter.FormatSpeciality(value)}");
+                        }
                         Console.Write("Введіть номер: ");
 
                         Speciality speciality = (Speciality)int.Parse(Console.ReadLine()!);
