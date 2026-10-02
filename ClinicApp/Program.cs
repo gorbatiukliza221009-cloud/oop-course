@@ -136,7 +136,7 @@ internal class Program
         {
             clinic.Doctors.Add(doctor);
         }
-        MainMenu(clinic);
+     
 
 
 
@@ -506,5 +506,37 @@ internal class Program
         Console.WriteLine($"Працює о 10:00: {morning.Contains(10)}");
         Console.WriteLine($"Працює о 16:00: {morning.Contains(16)}");
         Console.WriteLine($"Працює зараз: {morning.IsNow}");
+
+        Console.WriteLine(
+    ClinicFormatter.FormatBloodType(BloodType.APositive));
+
+        int[] ages = { 1, 3, 11, 16, 21, 33, 41, 111 };
+
+        foreach (int age in ages)
+        {
+            Console.WriteLine(ClinicFormatter.FormatAge(age));
+        }
+
+        Console.WriteLine(ClinicFormatter.FormatPhone("0501234567"));
+        Console.WriteLine(ClinicFormatter.FormatPhone("050-123-4567"));
+
+        Console.WriteLine("\n=== Перевірка індексаторів ===");
+
+        Patient? first = clinic.Patients[0];
+        Doctor? second = clinic.Doctors[1];
+
+        Console.WriteLine($"Перший пацієнт: {first}");
+        Console.WriteLine($"Другий лікар: {second}");
+
+        Console.WriteLine(
+            $"Індекс -1 повертає null: {clinic.Patients[-1] is null}");
+
+        Console.WriteLine(
+            $"Індекс 5 повертає null: {clinic.Patients[5] is null}");
+
+        Console.WriteLine(
+            $"Немає запису з індексом 0: {clinic.Appointments[0] is null}");
+
+        MainMenu(clinic);
     }
 }
