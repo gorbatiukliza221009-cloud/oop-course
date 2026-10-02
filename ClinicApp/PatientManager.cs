@@ -185,13 +185,13 @@ namespace ClinicApp
             Console.WriteLine($"Дорослих: {adultCount} з {_count}");
 
         }
-        public Patient? this[int index]
+        public Patient this[int index]
         {
             get
             {
                 if (index < 0 || index >= _count)
                 {
-                    return null;
+                    return null!;
                 }
 
                 return _patients[index];
