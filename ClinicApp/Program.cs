@@ -52,28 +52,69 @@ internal class Program
                         break;
 
                     case "2":
-                        Console.Write("Ім'я: ");
-                        string firstName = Console.ReadLine()!;
-
-                        Console.Write("Прізвище: ");
-                        string lastName = Console.ReadLine()!;
-
-                        Console.WriteLine("Група крові:");
-                        foreach (BloodType value in Enum.GetValues<BloodType>())
                         {
-                            Console.WriteLine(
-                                $"{(int)value} — {ClinicFormatter.FormatBloodType(value)}");
+                            try
+                            {
+                                Console.Write("Ім'я: ");
+                                string firstName = Console.ReadLine()!;
+
+                                Console.Write("Прізвище: ");
+                                string lastName = Console.ReadLine()!;
+
+                                Console.Write("Дата народження — дд.мм.рррр: ");
+                                if (!DateTime.TryParseExact(
+                                    Console.ReadLine(),
+                                    "dd.MM.yyyy",
+                                    System.Globalization.CultureInfo.InvariantCulture,
+                                    System.Globalization.DateTimeStyles.None,
+                                    out DateTime dateOfBirth))
+                                {
+                                    Console.WriteLine("Помилка: некоректний формат дати.");
+                                    break;
+                                }
+
+                                Console.Write("Телефон — 10 цифр: ");
+                                string phone = Console.ReadLine()!;
+
+                                Console.WriteLine("Група крові:");
+                                foreach (BloodType value in Enum.GetValues<BloodType>())
+                                {
+                                    Console.WriteLine(
+                                        $"{(int)value} — {ClinicFormatter.FormatBloodType(value)}");
+                                }
+
+                                Console.Write("Введіть номер: ");
+                                if (!int.TryParse(Console.ReadLine(), out int bloodTypeNumber))
+                                {
+                                    Console.WriteLine("Помилка: введіть ціле число.");
+                                    break;
+                                }
+
+                                if (!Enum.IsDefined(typeof(BloodType), bloodTypeNumber))
+                                {
+                                    Console.WriteLine("Помилка: такої групи крові немає.");
+                                    break;
+                                }
+
+                                BloodType bloodType = (BloodType)bloodTypeNumber;
+
+                                Patient newPatient = new Patient(
+                                    firstName, lastName, dateOfBirth, bloodType, phone);
+
+                                clinic.Patients.Add(newPatient);
+                            }
+                            catch (ArgumentOutOfRangeException e)
+                            {
+                                Console.WriteLine("Помилка: " + e.Message);
+                            }
+                            catch (ArgumentException e)
+                            {
+                                Console.WriteLine("Помилка: " + e.Message);
+                            }
+
+                            break;
                         }
-                        Console.Write("Введіть номер: ");
 
-                        BloodType bloodType = (BloodType)int.Parse(Console.ReadLine()!);
-
-                        Patient newPatient = new Patient(firstName, lastName);
-                        newPatient.BloodType = bloodType;
-
-                        clinic.Patients.Add(newPatient);
-                        break;
-                       
 
                     case "3":
                         Console.Write("Ім'я або прізвище для пошуку: ");
@@ -161,24 +202,76 @@ internal class Program
                         break;
 
                     case "2":
-                        Console.Write("Ім'я: ");
-                        string firstName = Console.ReadLine()!;
-
-                        Console.Write("Прізвище: ");
-                        string lastName = Console.ReadLine()!;
-
-                        Console.WriteLine("Спеціальність:");
-                        foreach (Speciality value in Enum.GetValues<Speciality>())
                         {
-                            Console.WriteLine(
-                                $"{(int)value} — {ClinicFormatter.FormatSpeciality(value)}");
+                            try
+                            {
+                                Console.Write("Ім'я: ");
+                                string firstName = Console.ReadLine()!;
+
+                                Console.Write("Прізвище: ");
+                                string lastName = Console.ReadLine()!;
+
+                                Console.WriteLine("Спеціальність:");
+                                foreach (Speciality value in Enum.GetValues<Speciality>())
+                                {
+                                    Console.WriteLine(
+                                        $"{(int)value} — {ClinicFormatter.FormatSpeciality(value)}");
+                                }
+
+                                Console.Write("Введіть номер: ");
+                                if (!int.TryParse(Console.ReadLine(), out int specialityNumber))
+                                {
+                                    Console.WriteLine("Помилка: введіть ціле число.");
+                                    break;
+                                }
+
+                                if (!Enum.IsDefined(typeof(Speciality), specialityNumber))
+                                {
+                                    Console.WriteLine("Помилка: такої спеціальності немає.");
+                                    break;
+                                }
+
+                                Speciality speciality = (Speciality)specialityNumber;
+
+                                Console.Write("Номер ліцензії: ");
+                                string licenseNumber = Console.ReadLine()!;
+
+                                Console.Write("Телефон — 10 цифр: ");
+                                string phone = Console.ReadLine()!;
+
+                                Console.Write("Година початку роботи — 0–23: ");
+                                if (!int.TryParse(Console.ReadLine(), out int start))
+                                {
+                                    Console.WriteLine("Помилка: введіть цілу годину.");
+                                    break;
+                                }
+
+                                Console.Write("Година завершення роботи — 1–24: ");
+                                if (!int.TryParse(Console.ReadLine(), out int end))
+                                {
+                                    Console.WriteLine("Помилка: введіть цілу годину.");
+                                    break;
+                                }
+
+                                WorkSchedule schedule = new WorkSchedule(start, end);
+
+                                Doctor newDoctor = new Doctor(
+                                    firstName, lastName, speciality, licenseNumber, phone);
+
+                                newDoctor.Schedule = schedule;
+                                clinic.Doctors.Add(newDoctor);
+                            }
+                            catch (ArgumentOutOfRangeException e)
+                            {
+                                Console.WriteLine("Помилка: " + e.Message);
+                            }
+                            catch (ArgumentException e)
+                            {
+                                Console.WriteLine("Помилка: " + e.Message);
+                            }
+
+                            break;
                         }
-                        Console.Write("Введіть номер: ");
-
-                        Speciality speciality = (Speciality)int.Parse(Console.ReadLine()!);
-
-                        clinic.Doctors.Add(new Doctor(firstName, lastName, speciality));
-                        break;
 
                     case "3":
                         Console.Write("Спеціальність англійською (наприклад Cardiology): ");
@@ -272,14 +365,27 @@ internal class Program
                         }
 
                         Console.Write("Тривалість у хвилинах: ");
-                        if (!int.TryParse(Console.ReadLine(), out int duration)
-                            || duration <= 0)
+
+                        if (!int.TryParse(Console.ReadLine(), out int duration))
                         {
-                            Console.WriteLine("Введіть додатну кількість хвилин.");
+                            Console.WriteLine("Помилка: введіть ціле число.");
                             break;
                         }
 
-                        clinic.Appointments.Book(patientId, doctorId, scheduledAt, duration);
+                        try
+                        {
+                            clinic.Appointments.Book(
+                                patientId, doctorId, scheduledAt, duration);
+                        }
+                        catch (ArgumentOutOfRangeException e)
+                        {
+                            Console.WriteLine("Помилка: " + e.Message);
+                        }
+                        catch (ArgumentException e)
+                        {
+                            Console.WriteLine("Помилка: " + e.Message);
+                        }
+
                         break;
 
                     case "2":
@@ -608,6 +714,75 @@ internal class Program
 
         Console.WriteLine($"Наявний ID: {existingName}");
         Console.WriteLine($"Відсутній ID: {missingName}");
+        Console.WriteLine($"Відсутній ID: {missingName}");
+        Console.WriteLine("\n=== Лаба 05: перевірка валідації ===");
+
+        // Дві невдалі спроби створення пацієнта.
+        for (int i = 1; i <= 2; i++)
+        {
+            try
+            {
+                new Patient("", "Петренко");
+                Console.WriteLine("ПОМИЛКА: порожнє ім’я прийнято.");
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine($"Спроба {i}: {e.Message}");
+            }
+        }
+
+        // Невдалі спроби не повинні збільшувати лічильник.
+        Patient validPatient = new Patient("Тест", "Перевірка");
+        int expectedId = patients[patients.Length - 1].Id + 1;
+
+        Console.WriteLine(
+            $"Очікуваний ID: {expectedId}; отриманий: {validPatient.Id}");
+
+        // Некоректне присвоєння не повинно змінити телефон.
+        string previousPhone = validPatient.Phone;
+
+        try
+        {
+            validPatient.Phone = "050123456a";
+            Console.WriteLine("ПОМИЛКА: телефон із літерою прийнято.");
+        }
+        catch (ArgumentException e)
+        {
+            Console.WriteLine($"Телефон: {e.Message}");
+        }
+
+        Console.WriteLine(
+            $"Телефон залишився без змін: {validPatient.Phone == previousPhone}");
+
+        try
+        {
+            validPatient.DateOfBirth = DateTime.Today.AddDays(1);
+            Console.WriteLine("ПОМИЛКА: майбутню дату прийнято.");
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            Console.WriteLine($"Дата народження: {e.Message}");
+        }
+
+        try
+        {
+            new WorkSchedule(20, 6);
+            Console.WriteLine("ПОМИЛКА: неправильний розклад прийнято.");
+        }
+        catch (ArgumentException e)
+        {
+            Console.WriteLine($"Розклад: {e.Message}");
+        }
+
+        try
+        {
+            new Appointment(patients[0].Id, doctors[0].Id, DateTime.Now, 0);
+            Console.WriteLine("ПОМИЛКА: нульову тривалість прийнято.");
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            Console.WriteLine($"Тривалість: {e.Message}");
+        }
         MainMenu(clinic);
     }
 }

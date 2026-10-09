@@ -17,11 +17,7 @@ public class Patient
         get => _firstName;
         set
         {
-            if (string.IsNullOrWhiteSpace(value) || value.Length > 50)
-                throw new ArgumentException(
-                    "Ім’я має містити від 1 до 50 символів і не може складатися лише з пробілів.",
-                    nameof(FirstName));
-
+            ClinicValidator.ValidateName(value, nameof(FirstName));
             _firstName = value;
         }
     }
@@ -31,11 +27,7 @@ public class Patient
         get => _lastName;
         set
         {
-            if (string.IsNullOrWhiteSpace(value) || value.Length > 50)
-                throw new ArgumentException(
-                    "Прізвище має містити від 1 до 50 символів і не може складатися лише з пробілів.",
-                    nameof(LastName));
-
+            ClinicValidator.ValidateName(value, nameof(LastName));
             _lastName = value;
         }
     }
@@ -45,11 +37,7 @@ public class Patient
         get => _dateOfBirth;
         set
         {
-            if (value.Date > DateTime.Today || value.Year < 1900)
-                throw new ArgumentOutOfRangeException(
-                    nameof(DateOfBirth),
-                    "Дата народження має бути не раніше 1900 року та не пізніше сьогодні.");
-
+            ClinicValidator.ValidateDate(value, nameof(DateOfBirth));
             _dateOfBirth = value;
         }
     }
@@ -61,19 +49,7 @@ public class Patient
         get => _phone;
         set
         {
-            if (string.IsNullOrWhiteSpace(value) || value.Length != 10)
-                throw new ArgumentException(
-                    "Телефон має містити рівно 10 цифр.",
-                    nameof(Phone));
-
-            foreach (char symbol in value)
-            {
-                if (symbol < '0' || symbol > '9')
-                    throw new ArgumentException(
-                        "Телефон має містити лише цифри від 0 до 9.",
-                        nameof(Phone));
-            }
-
+            ClinicValidator.ValidatePhone(value);
             _phone = value;
         }
     }
