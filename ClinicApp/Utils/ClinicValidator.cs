@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace ClinicApp.Utils;
 
@@ -14,17 +15,26 @@ public static class ClinicValidator
 
     public static void ValidatePhone(string phone)
     {
-        if (string.IsNullOrWhiteSpace(phone) || phone.Length != 10)
-            throw new ArgumentException(
-                "Телефон має містити рівно 10 цифр.",
-                nameof(phone));
-
-        foreach (char symbol in phone)
+        if (string.IsNullOrWhiteSpace(phone) ||
+            !Regex.IsMatch(phone, @"^[0-9]{10}\z"))
         {
-            if (symbol < '0' || symbol > '9')
-                throw new ArgumentException(
-                    "Телефон має містити лише цифри від 0 до 9.",
-                    nameof(phone));
+            throw new ArgumentException(
+                "Телефон має містити рівно 10 цифр від 0 до 9.",
+                nameof(phone));
+        }
+    }
+
+    public static void ValidateEmail(string email)
+    {
+        if (email == "")
+            return;
+
+        if (string.IsNullOrWhiteSpace(email) ||
+            !Regex.IsMatch(email, @"^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+\z"))
+        {
+            throw new ArgumentException(
+                "Некоректний email. Приклад: ivan@mail.com.",
+                nameof(email));
         }
     }
 

@@ -714,75 +714,92 @@ internal class Program
 
         Console.WriteLine($"Наявний ID: {existingName}");
         Console.WriteLine($"Відсутній ID: {missingName}");
-        Console.WriteLine($"Відсутній ID: {missingName}");
-        Console.WriteLine("\n=== Лаба 05: перевірка валідації ===");
+        Console.WriteLine("\n=== Задача 5: перевірка Regex ===");
 
-        // Дві невдалі спроби створення пацієнта.
-        for (int i = 1; i <= 2; i++)
+        Patient testPatient = patients[0];
+        string originalPhone = testPatient.Phone;
+        string originalEmail = testPatient.Email;
+
+        string[] phoneValues =
         {
+            "0501234567",
+            "050123456",
+            "05012345678",
+            "050abc4567",
+            "٠٥٠١٢٣٤٥٦٧",
+            "0501234567\n"
+        };
+
+        bool[] expectedPhoneResults =
+        {
+            true, false, false, false, false, false
+        };
+
+        for (int i = 0; i < phoneValues.Length; i++)
+        {
+            bool accepted = false;
+
             try
             {
-                new Patient("", "Петренко");
-                Console.WriteLine("ПОМИЛКА: порожнє ім’я прийнято.");
+                testPatient.Phone = phoneValues[i];
+                accepted = true;
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
-                Console.WriteLine($"Спроба {i}: {e.Message}");
+                accepted = false;
             }
+
+            string result = accepted == expectedPhoneResults[i]
+                ? "OK"
+                : "ПОМИЛКА";
+
+            string visibleValue = phoneValues[i].Replace("\n", "\\n");
+
+            Console.WriteLine(
+                $"{result}: телефон «{visibleValue}» — " +
+                (accepted ? "прийнято" : "відхилено"));
         }
 
-        // Невдалі спроби не повинні збільшувати лічильник.
-        Patient validPatient = new Patient("Тест", "Перевірка");
-        int expectedId = patients[patients.Length - 1].Id + 1;
+        testPatient.Phone = originalPhone;
 
-        Console.WriteLine(
-            $"Очікуваний ID: {expectedId}; отриманий: {validPatient.Id}");
+        string[] emailValues =
+        {
+            "ivan@mail.com",
+            "ivan@mail",
+            "iv an@mail.com",
+            "a@@b.com",
+            ""
+        };
 
-        // Некоректне присвоєння не повинно змінити телефон.
-        string previousPhone = validPatient.Phone;
+        bool[] expectedEmailResults =
+        {
+            true, false, false, false, true
+        };
 
-        try
+        for (int i = 0; i < emailValues.Length; i++)
         {
-            validPatient.Phone = "050123456a";
-            Console.WriteLine("ПОМИЛКА: телефон із літерою прийнято.");
-        }
-        catch (ArgumentException e)
-        {
-            Console.WriteLine($"Телефон: {e.Message}");
-        }
+            bool accepted = false;
 
-        Console.WriteLine(
-            $"Телефон залишився без змін: {validPatient.Phone == previousPhone}");
+            try
+            {
+                testPatient.Email = emailValues[i];
+                accepted = true;
+            }
+            catch (ArgumentException)
+            {
+                accepted = false;
+            }
 
-        try
-        {
-            validPatient.DateOfBirth = DateTime.Today.AddDays(1);
-            Console.WriteLine("ПОМИЛКА: майбутню дату прийнято.");
-        }
-        catch (ArgumentOutOfRangeException e)
-        {
-            Console.WriteLine($"Дата народження: {e.Message}");
-        }
+            string result = accepted == expectedEmailResults[i]
+                ? "OK"
+                : "ПОМИЛКА";
 
-        try
-        {
-            new WorkSchedule(20, 6);
-            Console.WriteLine("ПОМИЛКА: неправильний розклад прийнято.");
-        }
-        catch (ArgumentException e)
-        {
-            Console.WriteLine($"Розклад: {e.Message}");
+            Console.WriteLine(
+                $"{result}: email «{emailValues[i]}» — " +
+                (accepted ? "прийнято" : "відхилено"));
         }
 
-        try
-        {
-            new Appointment(patients[0].Id, doctors[0].Id, DateTime.Now, 0);
-            Console.WriteLine("ПОМИЛКА: нульову тривалість прийнято.");
-        }
-        catch (ArgumentOutOfRangeException e)
-        {
-            Console.WriteLine($"Тривалість: {e.Message}");
-        }
+        testPatient.Email = originalEmail;
         MainMenu(clinic);
     }
 }
