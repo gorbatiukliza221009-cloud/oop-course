@@ -69,7 +69,7 @@ namespace ClinicApp.Managers
                     {
                         _patients[j] = _patients[j + 1];
                     }
-                    _patients[_count - 1] = null;
+                    _patients[_count - 1] = null!;
                     _count--;
                     return true;
                 }
