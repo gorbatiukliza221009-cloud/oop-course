@@ -5,6 +5,12 @@ namespace ClinicApp.Utils;
 
 public static class ClinicValidator
 {
+    private static readonly Regex _phoneRegex =
+        new Regex(@"^[0-9]{10}\z");
+
+    private static readonly Regex _emailRegex =
+        new Regex(@"^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+\z");
+
     public static void ValidateName(string value, string fieldName)
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length > 50)
@@ -15,13 +21,10 @@ public static class ClinicValidator
 
     public static void ValidatePhone(string phone)
     {
-        if (string.IsNullOrWhiteSpace(phone) ||
-            !Regex.IsMatch(phone, @"^[0-9]{10}\z"))
-        {
+        if (string.IsNullOrWhiteSpace(phone) || !_phoneRegex.IsMatch(phone))
             throw new ArgumentException(
                 "Телефон має містити рівно 10 цифр від 0 до 9.",
                 nameof(phone));
-        }
     }
 
     public static void ValidateEmail(string email)
@@ -29,13 +32,10 @@ public static class ClinicValidator
         if (email == "")
             return;
 
-        if (string.IsNullOrWhiteSpace(email) ||
-            !Regex.IsMatch(email, @"^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+\z"))
-        {
+        if (string.IsNullOrWhiteSpace(email) || !_emailRegex.IsMatch(email))
             throw new ArgumentException(
                 "Некоректний email. Приклад: ivan@mail.com.",
                 nameof(email));
-        }
     }
 
     public static void ValidateDate(DateTime value, string fieldName)
