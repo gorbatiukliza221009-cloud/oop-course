@@ -1,6 +1,7 @@
 ﻿using System;
+using ClinicApp.Enums;
 
-namespace ClinicApp
+namespace ClinicApp.Enums
 {
     public enum BloodType
     {
