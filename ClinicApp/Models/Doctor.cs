@@ -15,25 +15,67 @@ namespace ClinicApp.Models
         public string FirstName
         {
             get => _firstName;
-            set => _firstName = value;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value) || value.Length > 50)
+                    throw new ArgumentException(
+                        "Ім’я має містити від 1 до 50 символів і не може складатися лише з пробілів.",
+                        nameof(FirstName));
+
+                _firstName = value;
+            }
         }
 
         public string LastName
         {
             get => _lastName;
-            set => _lastName = value;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value) || value.Length > 50)
+                    throw new ArgumentException(
+                        "Прізвище має містити від 1 до 50 символів і не може складатися лише з пробілів.",
+                        nameof(LastName));
+
+                _lastName = value;
+            }
         }
+
         public Speciality Speciality { get; set; }
+
         public string LicenseNumber
         {
             get => _licenseNumber;
-            set => _licenseNumber = value;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException(
+                        "Номер ліцензії не може бути порожнім або складатися лише з пробілів.",
+                        nameof(LicenseNumber));
+
+                _licenseNumber = value;
+            }
         }
 
         public string Phone
         {
             get => _phone;
-            set => _phone = value;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value) || value.Length != 10)
+                    throw new ArgumentException(
+                        "Телефон має містити рівно 10 цифр.",
+                        nameof(Phone));
+
+                foreach (char symbol in value)
+                {
+                    if (symbol < '0' || symbol > '9')
+                        throw new ArgumentException(
+                            "Телефон має містити лише цифри від 0 до 9.",
+                            nameof(Phone));
+                }
+
+                _phone = value;
+            }
         }
         public WorkSchedule Schedule { get; set; }
         public string FullName
@@ -65,19 +107,19 @@ namespace ClinicApp.Models
         }
 
         public Doctor(
-            string firstName,
-            string lastName,
-            Speciality speciality,
-            string licenseNumber,
-            string phone)
+    string firstName,
+    string lastName,
+    Speciality speciality,
+    string licenseNumber,
+    string phone)
         {
-            Id = _nextId++;
             FirstName = firstName;
             LastName = lastName;
             Speciality = speciality;
             LicenseNumber = licenseNumber;
             Phone = phone;
             Schedule = new WorkSchedule(8, 17);
+            Id = _nextId++;
         }
 
         public bool CanAcceptAt(int hour)
