@@ -135,4 +135,209 @@ public class MedicalRecordManager
             Console.WriteLine(records[i]);
         }
     }
+    public Diagnosis[] GetDiagnoses(int patientId)
+    {
+        int matches = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_records[i].PatientId == patientId &&
+                _records[i] is Diagnosis)
+            {
+                matches++;
+            }
+        }
+
+        Diagnosis[] result = new Diagnosis[matches];
+        int index = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_records[i].PatientId == patientId &&
+                _records[i] is Diagnosis diagnosis)
+            {
+                result[index] = diagnosis;
+                index++;
+            }
+        }
+
+        return result;
+    }
+    public LabResult[] GetLabResults(int patientId)
+    {
+        int matches = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_records[i].PatientId == patientId &&
+                _records[i] is LabResult)
+            {
+                matches++;
+            }
+        }
+
+        LabResult[] result = new LabResult[matches];
+        int index = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            LabResult? labResult = _records[i] as LabResult;
+
+            if (labResult != null && labResult.PatientId == patientId)
+            {
+                result[index] = labResult;
+                index++;
+            }
+        }
+
+        return result;
+    }
+
+    public Prescription[] GetPrescriptions(int patientId)
+    {
+        int matches = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_records[i].PatientId == patientId &&
+                _records[i] is Prescription)
+            {
+                matches++;
+            }
+        }
+
+        Prescription[] result = new Prescription[matches];
+        int index = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_records[i].PatientId == patientId &&
+                _records[i] is Prescription prescription)
+            {
+                result[index] = prescription;
+                index++;
+            }
+        }
+
+        return result;
+    }
+    public Diagnosis[] GetChronicDiagnoses(int patientId)
+    {
+        int matches = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_records[i].PatientId == patientId &&
+                _records[i] is Diagnosis diagnosis &&
+                diagnosis.IsChronic)
+            {
+                matches++;
+            }
+        }
+
+        Diagnosis[] result = new Diagnosis[matches];
+        int index = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_records[i].PatientId == patientId &&
+                _records[i] is Diagnosis diagnosis &&
+                diagnosis.IsChronic)
+            {
+                result[index] = diagnosis;
+                index++;
+            }
+        }
+
+        return result;
+    }
+
+    public Prescription[] GetActivePrescriptions(int patientId)
+    {
+        int matches = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_records[i].PatientId == patientId &&
+                _records[i] is Prescription prescription &&
+                prescription.IsActive())
+            {
+                matches++;
+            }
+        }
+
+        Prescription[] result = new Prescription[matches];
+        int index = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_records[i].PatientId == patientId &&
+                _records[i] is Prescription prescription &&
+                prescription.IsActive())
+            {
+                result[index] = prescription;
+                index++;
+            }
+        }
+
+        return result;
+    }
+    public void DisplayPatientSummary(int patientId)
+    {
+        MedicalRecord[] records = GetByPatient(patientId);
+
+        if (records.Length == 0)
+        {
+            Console.WriteLine($"У пацієнта #{patientId} немає медичних записів.");
+            return;
+        }
+
+        int diagnosisCount = 0;
+        int labResultCount = 0;
+        int prescriptionCount = 0;
+
+        for (int i = 0; i < records.Length; i++)
+        {
+            if (records[i] is Diagnosis)
+            {
+                diagnosisCount++;
+            }
+            else if (records[i] is LabResult)
+            {
+                labResultCount++;
+            }
+            else if (records[i] is Prescription)
+            {
+                prescriptionCount++;
+            }
+        }
+
+        Console.WriteLine($"\n=== Медична картка пацієнта #{patientId} ===");
+        Console.WriteLine(
+            $"Всього записів: {records.Length} (діагнозів: {diagnosisCount}, " +
+            $"аналізів: {labResultCount}, рецептів: {prescriptionCount})");
+
+        Diagnosis[] chronicDiagnoses = GetChronicDiagnoses(patientId);
+
+        if (chronicDiagnoses.Length > 0)
+        {
+            Console.WriteLine($"Хронічні діагнози ({chronicDiagnoses.Length}):");
+            for (int i = 0; i < chronicDiagnoses.Length; i++)
+            {
+                Console.WriteLine($"  {chronicDiagnoses[i]}");
+            }
+        }
+
+        Prescription[] activePrescriptions = GetActivePrescriptions(patientId);
+
+        if (activePrescriptions.Length > 0)
+        {
+            Console.WriteLine($"Активні рецепти ({activePrescriptions.Length}):");
+            for (int i = 0; i < activePrescriptions.Length; i++)
+            {
+                Console.WriteLine(
+                    $"  {activePrescriptions[i]} | до {activePrescriptions[i].ExpiresAt:dd.MM.yyyy}");
+            }
+        }
+    }
 }
