@@ -1,4 +1,5 @@
 ﻿using ClinicApp.Models;
+using ClinicApp.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,20 @@ namespace ClinicApp.Managers
             }
 
             return result;
+        }
+        public static int CancelAll(ICancellable[] items, string reason = "")
+        {
+            int cancelledCount = 0;
+
+            foreach (ICancellable item in items)
+            {
+                if (item.Cancel(reason))
+                {
+                    cancelledCount++;
+                }
+            }
+
+            return cancelledCount;
         }
         public bool Book(int patientId, int doctorId, DateTime scheduledAt, int durationMinutes = 30)
         {
