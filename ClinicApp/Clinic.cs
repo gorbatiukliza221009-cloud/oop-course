@@ -11,6 +11,7 @@ namespace ClinicApp
         public DoctorManager Doctors { get; }
         public AppointmentManager Appointments { get; }
         public MedicalRecordManager MedicalRecords { get; }
+        public BillingManager Billing { get; }
 
         public Clinic(string name)
         {
@@ -18,6 +19,7 @@ namespace ClinicApp
             Patients = new PatientManager();
             Doctors = new DoctorManager();
             Appointments = new AppointmentManager(Patients, Doctors);
+            Billing = new BillingManager(Appointments);
             MedicalRecords = new MedicalRecordManager();
         }
 
