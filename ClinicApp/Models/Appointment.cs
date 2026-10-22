@@ -53,9 +53,19 @@ namespace ClinicApp.Models
             Notes = "";
             Id = _nextId++;
         }
-        public decimal GetCost()
+        public virtual decimal GetCost()
         {
             return DurationMinutes * 10m;
+        }
+
+        public virtual string GetDescription()
+        {
+            return "Прийом";
+        }
+
+        public int GetPriority()
+        {
+            return 3;
         }
 
         public void MarkPaid()
@@ -91,12 +101,17 @@ namespace ClinicApp.Models
 
         public override string ToString()
         {
-            string text = $"[{Id}] Пацієнт #{PatientId} →  Лікар #{DoctorId} | " + $"{ScheduledAt: dd.MM.yyyy HH:mm}-{EndTime: HH:mm} | {Status}";
+            string text = $"[{Id}] {GetDescription()} | " +
+                          $"Пацієнт #{PatientId} → Лікар #{DoctorId} | " +
+                          $"{ScheduledAt:dd.MM.yyyy HH:mm}–{EndTime:HH:mm} | {Status}";
 
             if (Notes.Length > 0)
             {
                 text += $" | {Notes}";
             }
+
+            text += $" | {GetCost():F2} грн";
+
             return text;
         }
     }

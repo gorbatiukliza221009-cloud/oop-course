@@ -1098,7 +1098,20 @@ internal class Program
             Console.WriteLine(
                 $"{medicalRecord.GetRecordType()}: {medicalRecord.GetSummary()}");
         }
-        
+
+        // Тимчасова перевірка Лаби 08, задача 1.
+        Appointment testAppointment = new RegularAppointment(
+            patients[0].Id,
+            doctors[0].Id,
+            DateTime.Today.AddDays(1).AddHours(10)
+        );
+
+        Console.WriteLine("\n=== Лаба 08: перевірка поліморфізму ===");
+        Console.WriteLine(testAppointment);
+        Console.WriteLine($"Пріоритет: {testAppointment.GetPriority()}");
+        Console.WriteLine("Натисніть Enter, щоб перейти до меню.");
+        Console.ReadLine();
+
         MainMenu(clinic);
     }
 }
