@@ -51,29 +51,74 @@ namespace ClinicApp.Managers
 
             return cancelledCount;
         }
-        public bool Book(int patientId, int doctorId, DateTime scheduledAt, int durationMinutes = 30)
+        public bool Book(
+    int patientId,
+    int doctorId,
+    DateTime scheduledAt,
+    int durationMinutes = 30)
+        {
+            return AddAppointment(new RegularAppointment(
+                patientId, doctorId, scheduledAt, durationMinutes));
+        }
+
+        public bool BookUrgent(
+            int patientId,
+            int doctorId,
+            DateTime scheduledAt,
+            string urgencyNote = "",
+            int durationMinutes = 30)
+        {
+            return AddAppointment(new UrgentAppointment(
+                patientId, doctorId, scheduledAt,
+                urgencyNote, durationMinutes));
+        }
+
+        public bool BookSpecialist(
+            int patientId,
+            int doctorId,
+            DateTime scheduledAt,
+            string topic = "",
+            int durationMinutes = 45)
+        {
+            return AddAppointment(new SpecialistAppointment(
+                patientId, doctorId, scheduledAt,
+                topic, durationMinutes));
+        }
+
+        private bool AddAppointment(Appointment appointment)
         {
             if (_count >= MaxAppointments)
             {
                 Console.WriteLine("Досягнуто ліміту записів на прийом.");
                 return false;
             }
-            var patient = _patients.FindById(patientId);
-            var doctor = _doctors.FindById(doctorId);
+
+            Patient? patient = _patients.FindById(appointment.PatientId);
+            Doctor? doctor = _doctors.FindById(appointment.DoctorId);
+
             if (patient == null)
             {
-                Console.WriteLine($"Пацієнт з ID {patientId} не знайдений.");
+                Console.WriteLine(
+                    $"Пацієнт з ID {appointment.PatientId} не знайдений.");
                 return false;
             }
+
             if (doctor == null)
             {
-                Console.WriteLine($"Лікар з ID {doctorId} не знайдений.");
+                Console.WriteLine(
+                    $"Лікар з ID {appointment.DoctorId} не знайдений.");
                 return false;
             }
-            var appointment = new Appointment(patientId, doctorId, scheduledAt, durationMinutes);
+
             _appointments[_count] = appointment;
             _count++;
-            Console.WriteLine($"Запис на прийом [{appointment.Id}] для пацієнта [{patient.FullName}] до лікаря [{doctor.FullName}] заплановано на {scheduledAt}.");
+
+            Console.WriteLine(
+                $"Запис на прийом [{appointment.Id}] " +
+                $"для пацієнта [{patient.FullName}] " +
+                $"до лікаря [{doctor.FullName}] " +
+                $"заплановано на {appointment.ScheduledAt:dd.MM.yyyy HH:mm}.");
+
             return true;
         }
         public Appointment[] GetByDate(int year, int month, int day)

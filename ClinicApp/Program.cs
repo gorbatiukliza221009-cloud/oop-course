@@ -1099,36 +1099,66 @@ internal class Program
                 $"{medicalRecord.GetRecordType()}: {medicalRecord.GetSummary()}");
         }
 
-        // Тимчасова перевірка Лаби 08, задача 2.
+        // Початкові записи різних типів через менеджер.
         DateTime tomorrow = DateTime.Today.AddDays(1);
 
-        Appointment[] testAppointments =
+        clinic.Appointments.Book(
+            patients[0].Id,
+            doctors[0].Id,
+            tomorrow.AddHours(10));
+
+        clinic.Appointments.BookUrgent(
+            patients[1].Id,
+            doctors[1].Id,
+            tomorrow.AddHours(11),
+            "біль у грудях");
+
+        clinic.Appointments.BookSpecialist(
+            patients[2].Id,
+            doctors[2].Id,
+            tomorrow.AddHours(12),
+            "кардіологія",
+            60);
+
+        Console.WriteLine("\n=== Прийоми різних типів ===");
+
+        Appointment[] appointments = clinic.Appointments.GetAll();
+
+        foreach (Appointment appointment in appointments)
         {
-            new RegularAppointment(
-                patients[0].Id,
-                doctors[0].Id,
-                tomorrow.AddHours(10)),
-
-            new UrgentAppointment(
-                patients[1].Id,
-                doctors[1].Id,
-                tomorrow.AddHours(11),
-                "біль у грудях"),
-
-            new SpecialistAppointment(
-                patients[2].Id,
-                doctors[2].Id,
-                tomorrow.AddHours(12),
-                "кардіологія",
-                60)
-        };
-
-        Console.WriteLine("\n=== Лаба 08: різні види прийомів ===");
-
-        for (int i = 0; i < testAppointments.Length; i++)
-        {
-            Console.WriteLine(testAppointments[i]);
+            Console.WriteLine(appointment);
         }
+
+        // Демонстрація new проти override.
+        // GetDescription() є virtual у Appointment і override у
+        // UrgentAppointment, тому викликається реалізація типу об'єкта.
+        //
+        // GetPriority() не є virtual. Метод обирається за типом змінної:
+        // через Appointment — 3, через UrgentAppointment — 1.
+        //
+        // Для поліморфного GetPriority() потрібно в Appointment
+        // додати virtual, а в UrgentAppointment замінити new на override.
+        // Тут цього не змінюємо, щоб показати різницю.
+
+        UrgentAppointment urgent = new UrgentAppointment(
+            patients[0].Id,
+            doctors[0].Id,
+            tomorrow.AddHours(14),
+            "тест");
+
+        Appointment asAppointment = urgent;
+
+        Console.WriteLine("\n== new vs override ==");
+
+        Console.WriteLine(
+            $"Через Appointment:       " +
+            $"{asAppointment.GetDescription()} | " +
+            $"пріоритет {asAppointment.GetPriority()}");
+
+        Console.WriteLine(
+            $"Через UrgentAppointment: " +
+            $"{urgent.GetDescription()} | " +
+            $"пріоритет {urgent.GetPriority()}");
 
         Console.WriteLine("Натисніть Enter, щоб перейти до меню.");
         Console.ReadLine();
