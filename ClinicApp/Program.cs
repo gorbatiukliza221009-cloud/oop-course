@@ -1202,6 +1202,35 @@ internal class Program
             $"{urgent.GetDescription()} | " +
             $"пріоритет {urgent.GetPriority()}");
 
+        // Перевірка VIP-знижки: усі прийоми тривають 30 хвилин.
+        Appointment[] vipAppointments =
+        {
+            new RegularAppointment(
+                patients[0].Id, doctors[0].Id,
+                tomorrow.AddHours(15), 30),
+
+            new UrgentAppointment(
+                patients[1].Id, doctors[1].Id,
+                tomorrow.AddHours(15), "VIP-перевірка", 30),
+
+            new SpecialistAppointment(
+                patients[2].Id, doctors[2].Id,
+                tomorrow.AddHours(15), "VIP-перевірка", 30)
+        };
+
+        Console.WriteLine("\n=== Перевірка VIP-знижки 20% ===");
+
+        foreach (Appointment appointment in vipAppointments)
+        {
+            decimal fullCost = appointment.GetCost();
+
+            appointment.DiscountMultiplier = 0.8m;
+
+            Console.WriteLine(
+                $"{appointment.GetDescription()} | " +
+                $"Без знижки: {fullCost:F2} грн | " +
+                $"VIP: {appointment.GetCost():F2} грн");
+        }
         Console.WriteLine("Натисніть Enter, щоб перейти до меню.");
         Console.ReadLine();
 

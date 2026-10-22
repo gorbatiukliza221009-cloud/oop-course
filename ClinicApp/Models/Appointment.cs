@@ -10,6 +10,7 @@ namespace ClinicApp.Models
         private static int _nextId = 1;
         private int _durationMinutes;
         private bool _isPaid = false;
+        private decimal _discountMultiplier = 1m;
         public int Id { get; }
         public int PatientId { get; }
         public int DoctorId { get; }
@@ -53,9 +54,27 @@ namespace ClinicApp.Models
             Notes = "";
             Id = _nextId++;
         }
+        // Варіант А: множник знижки зберігається в Appointment.
+        // Усі підкласи враховують його через base.GetCost(),
+        // тому окремі VIP-підкласи не потрібні.
+        public decimal DiscountMultiplier
+        {
+            get => _discountMultiplier;
+            set
+            {
+                if (value < 0m || value > 1m)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        nameof(DiscountMultiplier),
+                        "Множник знижки має бути від 0 до 1.");
+                }
+
+                _discountMultiplier = value;
+            }
+        }
         public virtual decimal GetCost()
         {
-            return DurationMinutes * 10m;
+            return DurationMinutes * 10m * DiscountMultiplier;
         }
 
         public virtual string GetDescription()
