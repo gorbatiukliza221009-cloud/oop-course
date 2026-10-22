@@ -1099,16 +1099,37 @@ internal class Program
                 $"{medicalRecord.GetRecordType()}: {medicalRecord.GetSummary()}");
         }
 
-        // Тимчасова перевірка Лаби 08, задача 1.
-        Appointment testAppointment = new RegularAppointment(
-            patients[0].Id,
-            doctors[0].Id,
-            DateTime.Today.AddDays(1).AddHours(10)
-        );
+        // Тимчасова перевірка Лаби 08, задача 2.
+        DateTime tomorrow = DateTime.Today.AddDays(1);
 
-        Console.WriteLine("\n=== Лаба 08: перевірка поліморфізму ===");
-        Console.WriteLine(testAppointment);
-        Console.WriteLine($"Пріоритет: {testAppointment.GetPriority()}");
+        Appointment[] testAppointments =
+        {
+            new RegularAppointment(
+                patients[0].Id,
+                doctors[0].Id,
+                tomorrow.AddHours(10)),
+
+            new UrgentAppointment(
+                patients[1].Id,
+                doctors[1].Id,
+                tomorrow.AddHours(11),
+                "біль у грудях"),
+
+            new SpecialistAppointment(
+                patients[2].Id,
+                doctors[2].Id,
+                tomorrow.AddHours(12),
+                "кардіологія",
+                60)
+        };
+
+        Console.WriteLine("\n=== Лаба 08: різні види прийомів ===");
+
+        for (int i = 0; i < testAppointments.Length; i++)
+        {
+            Console.WriteLine(testAppointments[i]);
+        }
+
         Console.WriteLine("Натисніть Enter, щоб перейти до меню.");
         Console.ReadLine();
 
