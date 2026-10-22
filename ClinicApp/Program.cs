@@ -393,6 +393,7 @@ internal class Program
                 Console.WriteLine("6 — Скасувати запис");
                 Console.WriteLine("7 — Завершити запис");
                 Console.WriteLine("8 — Скасувати всі записи пацієнта");
+                Console.WriteLine("9 — За типом прийому");
                 Console.WriteLine("0 — Вихід");
                 Console.Write("Ваш вибір: ");
 
@@ -572,6 +573,47 @@ internal class Program
                             Console.WriteLine($"Скасовано записів: {cancelledCount}");
                             break;
                         }
+                    case "9":
+                        {
+                            Console.WriteLine("1 — Термінові");
+                            Console.WriteLine("2 — Консультації спеціаліста");
+                            Console.WriteLine("3 — Звичайні");
+                            Console.Write("Оберіть тип прийому: ");
+
+                            string typeChoice = Console.ReadLine() ?? "";
+                            Appointment[] filtered;
+
+                            switch (typeChoice)
+                            {
+                                case "1":
+                                    filtered = clinic.Appointments.GetUrgent();
+                                    break;
+
+                                case "2":
+                                    filtered = clinic.Appointments.GetSpecialist();
+                                    break;
+
+                                case "3":
+                                    filtered = clinic.Appointments.GetRegular();
+                                    break;
+
+                                default:
+                                    Console.WriteLine("Невідомий тип прийому.");
+                                    continue;
+                            }
+
+                            if (filtered.Length == 0)
+                            {
+                                Console.WriteLine("Записів цього типу не знайдено.");
+                            }
+                            else
+                            {
+                                clinic.Appointments.DisplayList(filtered);
+                            }
+
+                            break;
+                        }
+
 
                     case "0":
                         return;
