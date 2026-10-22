@@ -393,6 +393,7 @@ internal class Program
                 Console.WriteLine("6 — Скасувати запис");
                 Console.WriteLine("7 — Завершити запис");
                 Console.WriteLine("8 — Скасувати всі записи пацієнта");
+                Console.WriteLine("9 — За типом прийому");
                 Console.WriteLine("0 — Вихід");
                 Console.Write("Ваш вибір: ");
 
@@ -572,6 +573,47 @@ internal class Program
                             Console.WriteLine($"Скасовано записів: {cancelledCount}");
                             break;
                         }
+                    case "9":
+                        {
+                            Console.WriteLine("1 — Термінові");
+                            Console.WriteLine("2 — Консультації спеціаліста");
+                            Console.WriteLine("3 — Звичайні");
+                            Console.Write("Оберіть тип прийому: ");
+
+                            string typeChoice = Console.ReadLine() ?? "";
+                            Appointment[] filtered;
+
+                            switch (typeChoice)
+                            {
+                                case "1":
+                                    filtered = clinic.Appointments.GetUrgent();
+                                    break;
+
+                                case "2":
+                                    filtered = clinic.Appointments.GetSpecialist();
+                                    break;
+
+                                case "3":
+                                    filtered = clinic.Appointments.GetRegular();
+                                    break;
+
+                                default:
+                                    Console.WriteLine("Невідомий тип прийому.");
+                                    continue;
+                            }
+
+                            if (filtered.Length == 0)
+                            {
+                                Console.WriteLine("Записів цього типу не знайдено.");
+                            }
+                            else
+                            {
+                                clinic.Appointments.DisplayList(filtered);
+                            }
+
+                            break;
+                        }
+
 
                     case "0":
                         return;
@@ -1098,7 +1140,100 @@ internal class Program
             Console.WriteLine(
                 $"{medicalRecord.GetRecordType()}: {medicalRecord.GetSummary()}");
         }
-        
+
+        // Початкові записи різних типів через менеджер.
+        DateTime tomorrow = DateTime.Today.AddDays(1);
+
+        clinic.Appointments.Book(
+            patients[0].Id,
+            doctors[0].Id,
+            tomorrow.AddHours(10));
+
+        clinic.Appointments.BookUrgent(
+            patients[1].Id,
+            doctors[1].Id,
+            tomorrow.AddHours(11),
+            "біль у грудях");
+
+        clinic.Appointments.BookSpecialist(
+            patients[2].Id,
+            doctors[2].Id,
+            tomorrow.AddHours(12),
+            "кардіологія",
+            60);
+
+        Console.WriteLine("\n=== Прийоми різних типів ===");
+
+        Appointment[] appointments = clinic.Appointments.GetAll();
+
+        foreach (Appointment appointment in appointments)
+        {
+            Console.WriteLine(appointment);
+        }
+
+        // Демонстрація new проти override.
+        // GetDescription() є virtual у Appointment і override у
+        // UrgentAppointment, тому викликається реалізація типу об'єкта.
+        //
+        // GetPriority() не є virtual. Метод обирається за типом змінної:
+        // через Appointment — 3, через UrgentAppointment — 1.
+        //
+        // Для поліморфного GetPriority() потрібно в Appointment
+        // додати virtual, а в UrgentAppointment замінити new на override.
+        // Тут цього не змінюємо, щоб показати різницю.
+
+        UrgentAppointment urgent = new UrgentAppointment(
+            patients[0].Id,
+            doctors[0].Id,
+            tomorrow.AddHours(14),
+            "тест");
+
+        Appointment asAppointment = urgent;
+
+        Console.WriteLine("\n== new vs override ==");
+
+        Console.WriteLine(
+            $"Через Appointment:       " +
+            $"{asAppointment.GetDescription()} | " +
+            $"пріоритет {asAppointment.GetPriority()}");
+
+        Console.WriteLine(
+            $"Через UrgentAppointment: " +
+            $"{urgent.GetDescription()} | " +
+            $"пріоритет {urgent.GetPriority()}");
+
+        // Перевірка VIP-знижки: усі прийоми тривають 30 хвилин.
+        Appointment[] vipAppointments =
+        {
+            new RegularAppointment(
+                patients[0].Id, doctors[0].Id,
+                tomorrow.AddHours(15), 30),
+
+            new UrgentAppointment(
+                patients[1].Id, doctors[1].Id,
+                tomorrow.AddHours(15), "VIP-перевірка", 30),
+
+            new SpecialistAppointment(
+                patients[2].Id, doctors[2].Id,
+                tomorrow.AddHours(15), "VIP-перевірка", 30)
+        };
+
+        Console.WriteLine("\n=== Перевірка VIP-знижки 20% ===");
+
+        foreach (Appointment appointment in vipAppointments)
+        {
+            decimal fullCost = appointment.GetCost();
+
+            appointment.DiscountMultiplier = 0.8m;
+
+            Console.WriteLine(
+                $"{appointment.GetDescription()} | " +
+                $"Без знижки: {fullCost:F2} грн | " +
+                $"VIP: {appointment.GetCost():F2} грн");
+        }
+        Console.WriteLine("Натисніть Enter, щоб перейти до меню.");
+        Console.ReadLine();
+
         MainMenu(clinic);
     }
 }

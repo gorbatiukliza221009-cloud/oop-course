@@ -51,29 +51,74 @@ namespace ClinicApp.Managers
 
             return cancelledCount;
         }
-        public bool Book(int patientId, int doctorId, DateTime scheduledAt, int durationMinutes = 30)
+        public bool Book(
+    int patientId,
+    int doctorId,
+    DateTime scheduledAt,
+    int durationMinutes = 30)
+        {
+            return AddAppointment(new RegularAppointment(
+                patientId, doctorId, scheduledAt, durationMinutes));
+        }
+
+        public bool BookUrgent(
+            int patientId,
+            int doctorId,
+            DateTime scheduledAt,
+            string urgencyNote = "",
+            int durationMinutes = 30)
+        {
+            return AddAppointment(new UrgentAppointment(
+                patientId, doctorId, scheduledAt,
+                urgencyNote, durationMinutes));
+        }
+
+        public bool BookSpecialist(
+            int patientId,
+            int doctorId,
+            DateTime scheduledAt,
+            string topic = "",
+            int durationMinutes = 45)
+        {
+            return AddAppointment(new SpecialistAppointment(
+                patientId, doctorId, scheduledAt,
+                topic, durationMinutes));
+        }
+
+        private bool AddAppointment(Appointment appointment)
         {
             if (_count >= MaxAppointments)
             {
                 Console.WriteLine("Досягнуто ліміту записів на прийом.");
                 return false;
             }
-            var patient = _patients.FindById(patientId);
-            var doctor = _doctors.FindById(doctorId);
+
+            Patient? patient = _patients.FindById(appointment.PatientId);
+            Doctor? doctor = _doctors.FindById(appointment.DoctorId);
+
             if (patient == null)
             {
-                Console.WriteLine($"Пацієнт з ID {patientId} не знайдений.");
+                Console.WriteLine(
+                    $"Пацієнт з ID {appointment.PatientId} не знайдений.");
                 return false;
             }
+
             if (doctor == null)
             {
-                Console.WriteLine($"Лікар з ID {doctorId} не знайдений.");
+                Console.WriteLine(
+                    $"Лікар з ID {appointment.DoctorId} не знайдений.");
                 return false;
             }
-            var appointment = new Appointment(patientId, doctorId, scheduledAt, durationMinutes);
+
             _appointments[_count] = appointment;
             _count++;
-            Console.WriteLine($"Запис на прийом [{appointment.Id}] для пацієнта [{patient.FullName}] до лікаря [{doctor.FullName}] заплановано на {scheduledAt}.");
+
+            Console.WriteLine(
+                $"Запис на прийом [{appointment.Id}] " +
+                $"для пацієнта [{patient.FullName}] " +
+                $"до лікаря [{doctor.FullName}] " +
+                $"заплановано на {appointment.ScheduledAt:dd.MM.yyyy HH:mm}.");
+
             return true;
         }
         public Appointment[] GetByDate(int year, int month, int day)
@@ -196,7 +241,86 @@ namespace ClinicApp.Managers
             }
             return result;
         }
+        public Appointment[] GetUrgent()
+        {
+            int matches = 0;
 
+            for (int i = 0; i < _count; i++)
+            {
+                if (_appointments[i] is UrgentAppointment)
+                {
+                    matches++;
+                }
+            }
+
+            Appointment[] result = new Appointment[matches];
+            int index = 0;
+
+            for (int i = 0; i < _count; i++)
+            {
+                if (_appointments[i] is UrgentAppointment)
+                {
+                    result[index] = _appointments[i];
+                    index++;
+                }
+            }
+
+            return result;
+        }
+
+        public Appointment[] GetSpecialist()
+        {
+            int matches = 0;
+
+            for (int i = 0; i < _count; i++)
+            {
+                if (_appointments[i] is SpecialistAppointment)
+                {
+                    matches++;
+                }
+            }
+
+            Appointment[] result = new Appointment[matches];
+            int index = 0;
+
+            for (int i = 0; i < _count; i++)
+            {
+                if (_appointments[i] is SpecialistAppointment)
+                {
+                    result[index] = _appointments[i];
+                    index++;
+                }
+            }
+
+            return result;
+        }
+
+        public Appointment[] GetRegular()
+        {
+            int matches = 0;
+
+            for (int i = 0; i < _count; i++)
+            {
+                if (_appointments[i] is RegularAppointment)
+                {
+                    matches++;
+                }
+            }
+
+            Appointment[] result = new Appointment[matches];
+            int index = 0;
+
+            for (int i = 0; i < _count; i++)
+            {
+                if (_appointments[i] is RegularAppointment)
+                {
+                    result[index] = _appointments[i];
+                    index++;
+                }
+            }
+
+            return result;
+        }
         public void DisplayAppointment(Appointment appointment)
         {
             Patient? patient = _patients.FindById(appointment.PatientId);
@@ -223,14 +347,17 @@ namespace ClinicApp.Managers
             }
 
             string text =
-                $"[{appointment.Id}] {patientName} -> {doctorName} |"
-                + $" {appointment.ScheduledAt:dd.MM.yyyy HH:mm}-"+
-                $"{appointment.EndTime:HH:mm} | {appointment.Status}";
+    $"[{appointment.Id}] {appointment.GetDescription()} | " +
+    $"{patientName} → {doctorName} | " +
+    $"{appointment.ScheduledAt:dd.MM.yyyy HH:mm}–" +
+    $"{appointment.EndTime:HH:mm} | {appointment.Status}";
 
-            if ( appointment.Notes.Length>0)
+            if (appointment.Notes.Length > 0)
             {
                 text += $" | {appointment.Notes}";
             }
+
+            text += $" | {appointment.GetCost():F2} грн";
 
             Console.WriteLine(text);
         }

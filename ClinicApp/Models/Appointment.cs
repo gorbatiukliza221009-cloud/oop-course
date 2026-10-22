@@ -10,6 +10,7 @@ namespace ClinicApp.Models
         private static int _nextId = 1;
         private int _durationMinutes;
         private bool _isPaid = false;
+        private decimal _discountMultiplier = 1m;
         public int Id { get; }
         public int PatientId { get; }
         public int DoctorId { get; }
@@ -53,9 +54,37 @@ namespace ClinicApp.Models
             Notes = "";
             Id = _nextId++;
         }
-        public decimal GetCost()
+        // Варіант А: множник знижки зберігається в Appointment.
+        // Усі підкласи враховують його через base.GetCost(),
+        // тому окремі VIP-підкласи не потрібні.
+        public decimal DiscountMultiplier
         {
-            return DurationMinutes * 10m;
+            get => _discountMultiplier;
+            set
+            {
+                if (value < 0m || value > 1m)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        nameof(DiscountMultiplier),
+                        "Множник знижки має бути від 0 до 1.");
+                }
+
+                _discountMultiplier = value;
+            }
+        }
+        public virtual decimal GetCost()
+        {
+            return DurationMinutes * 10m * DiscountMultiplier;
+        }
+
+        public virtual string GetDescription()
+        {
+            return "Прийом";
+        }
+
+        public int GetPriority()
+        {
+            return 3;
         }
 
         public void MarkPaid()
@@ -91,12 +120,17 @@ namespace ClinicApp.Models
 
         public override string ToString()
         {
-            string text = $"[{Id}] Пацієнт #{PatientId} →  Лікар #{DoctorId} | " + $"{ScheduledAt: dd.MM.yyyy HH:mm}-{EndTime: HH:mm} | {Status}";
+            string text = $"[{Id}] {GetDescription()} | " +
+                          $"Пацієнт #{PatientId} → Лікар #{DoctorId} | " +
+                          $"{ScheduledAt:dd.MM.yyyy HH:mm}–{EndTime:HH:mm} | {Status}";
 
             if (Notes.Length > 0)
             {
                 text += $" | {Notes}";
             }
+
+            text += $" | {GetCost():F2} грн";
+
             return text;
         }
     }
