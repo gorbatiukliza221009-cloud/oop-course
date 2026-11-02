@@ -919,6 +919,113 @@ internal class Program
                 }
             }
         }
+
+        void WaitingRoomMenu(Clinic clinic)
+        {
+            while (true)
+            {
+                Console.WriteLine("\n── Черга ───────────────────────");
+                Console.WriteLine("  1. Додати пацієнта до черги");
+                Console.WriteLine("  2. Прийняти першого");
+                Console.WriteLine("  3. Хто перший?");
+                Console.WriteLine("  4. Переглянути всю чергу");
+                Console.WriteLine("  0. Назад");
+                Console.Write("Оберіть: ");
+
+                string choice = Console.ReadLine()!;
+
+                switch (choice)
+                {
+                    case "1":
+                        {
+                            Console.Write("ID пацієнта: ");
+
+                            if (!int.TryParse(Console.ReadLine(), out int patientId))
+                            {
+                                Console.WriteLine("Помилка: введіть ціле число.");
+                                break;
+                            }
+
+                            Patient? patient = clinic.Patients.FindById(patientId);
+
+                            if (patient == null)
+                            {
+                                Console.WriteLine("Пацієнта не знайдено.");
+                                break;
+                            }
+
+                            clinic.WaitingRoom.Enqueue(patient);
+
+                            Console.WriteLine(
+                                $"До черги додано: {patient.FullName}.");
+                            break;
+                        }
+
+                    case "2":
+                        {
+                            try
+                            {
+                                Patient patient = clinic.WaitingRoom.Dequeue();
+
+                                Console.WriteLine(
+                                    $"Прийнято: {patient.FullName}. " +
+                                    $"У черзі лишилось: {clinic.WaitingRoom.Count}");
+                            }
+                            catch (InvalidOperationException ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+
+                            break;
+                        }
+
+                    case "3":
+                        {
+                            try
+                            {
+                                Patient patient = clinic.WaitingRoom.Peek();
+
+                                Console.WriteLine($"Перший у черзі: {patient.FullName}.");
+                            }
+                            catch (InvalidOperationException ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+
+                            break;
+                        }
+
+                    case "4":
+                        {
+                            Patient[] waitingPatients = clinic.WaitingRoom.ToArray();
+
+                            if (waitingPatients.Length == 0)
+                            {
+                                Console.WriteLine("Черга порожня.");
+                                break;
+                            }
+
+                            Console.WriteLine("Пацієнти в черзі:");
+
+                            for (int i = 0; i < waitingPatients.Length; i++)
+                            {
+                                Console.WriteLine(
+                                    $"{i + 1}. {waitingPatients[i].FullName}");
+                            }
+
+                            break;
+                        }
+
+                    case "0":
+                        return;
+
+                    default:
+                        Console.WriteLine("Невідомий пункт меню.");
+                        break;
+                }
+            }
+        }
+
         void MainMenu(Clinic clinic)
         {
             while (true)
@@ -932,7 +1039,8 @@ internal class Program
                 Console.WriteLine("║" + "  3. Записи         — прийоми, скасування".PadRight(46) + "║");
                 Console.WriteLine("║" + "  4. Медична картка — діагнози, рецепти".PadRight(46) + "║");
                 Console.WriteLine("║" + "  5. Рахунки        — оплата, борги".PadRight(46) + "║");
-                Console.WriteLine("║" + "  6. Звіт           — загальна статистика".PadRight(46) + "║");
+                Console.WriteLine("║" + "  6. Черга          — очікування, прийом".PadRight(46) + "║");
+                Console.WriteLine("║" + "  7. Звіт           — загальна статистика".PadRight(46) + "║");
                 Console.WriteLine("║" + "  0. Вийти".PadRight(46) + "║");
                 Console.WriteLine("╚══════════════════════════════════════════════╝");
                 Console.Write("Оберіть розділ: ");
@@ -962,6 +1070,10 @@ internal class Program
                         break;
 
                     case "6":
+                        WaitingRoomMenu(clinic);
+                        break;
+
+                    case "7":
                         clinic.GenerateReport();
                         break;
 
