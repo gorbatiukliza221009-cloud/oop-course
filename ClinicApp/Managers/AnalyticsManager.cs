@@ -40,7 +40,6 @@ public class AnalyticsManager
                     last = appointment.ScheduledAt;
             }
 
-            Console.WriteLine($"  (обчислюю {doctor.FullName}...)"); // ТИМЧАСОВО
 
             yield return new DoctorStats(doctor.Id, doctor.FullName,
                                          count, revenue, last);
