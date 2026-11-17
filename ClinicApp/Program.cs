@@ -1441,7 +1441,19 @@ internal class Program
                         break;
 
                     case "0":
-                        return;
+                        {
+                            Console.Write("Зберегти сесію? (y/n): ");
+                            string saveAnswer = (Console.ReadLine() ?? "").Trim().ToLower();
+
+                            if (saveAnswer == "y")
+                            {
+                                clinic.Session.Save(clinic);
+                                Console.WriteLine("Сесію збережено.");
+                                clinic.Logger.LogInfo("Сесію збережено.");
+                            }
+
+                            return;
+                        }
 
                     default:
                         Console.WriteLine("Невідомий пункт меню.");
@@ -1706,6 +1718,21 @@ internal class Program
                 $"Без знижки: {fullCost:F2} грн | " +
                 $"VIP: {appointment.GetCost():F2} грн");
         }
+
+        // Відновлення сесії (Лаба 12).
+        if (clinic.Session.Exists())
+        {
+            Console.Write("\nЗнайдено збережену сесію. Завантажити? (y/n): ");
+            string loadAnswer = (Console.ReadLine() ?? "").Trim().ToLower();
+
+            if (loadAnswer == "y")
+            {
+                int loaded = clinic.Session.Load(clinic);
+                Console.WriteLine($"Завантажено {loaded} пацієнтів.");
+                clinic.Logger.LogInfo($"Сесію завантажено: {loaded} пацієнтів.");
+            }
+        }
+
         Console.WriteLine("Натисніть Enter, щоб перейти до меню.");
         Console.ReadLine();
 

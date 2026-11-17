@@ -16,4 +16,6 @@ desktop.ini
 # Конфіденційні дані
 *.env
 appsettings.Development.json
-secrets.json
+secrets.json*.log
+reports/
+session.dat
