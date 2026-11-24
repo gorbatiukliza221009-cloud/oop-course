@@ -18,6 +18,7 @@ internal class Program
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
         Clinic clinic = new Clinic("Медична клініка");
+        clinic.Appointments.AppointmentBooked += OnAppointmentBookedConsole;
         Patient[] patients =
         {
             new Patient("Іван", "Петренко",
@@ -110,7 +111,7 @@ internal class Program
                                     firstName, lastName, dateOfBirth, bloodType, phone);
 
                                 clinic.Patients.Add(newPatient);
-                                clinic.Logger.LogInfo($"Додано пацієнта #{newPatient.Id}: {newPatient.FullName}");
+                               
                             }
                             catch (ArgumentOutOfRangeException e)
                             {
@@ -453,7 +454,7 @@ internal class Program
                         {
                             clinic.Appointments.Book(
                                 patientId, doctorId, scheduledAt, duration);
-                            clinic.Logger.LogInfo($"Запис створено: пацієнт #{patientId} → лікар #{doctorId}, {scheduledAt:dd.MM.yyyy HH:mm}");
+                            
                         }
                         catch (ArgumentOutOfRangeException e)
                         {
@@ -537,7 +538,7 @@ internal class Program
                         if (clinic.Appointments.Cancel(cancelId, reason))
                         {
                             Console.WriteLine($"Запис [{cancelId}] скасовано.");
-                            clinic.Logger.LogInfo($"Запис #{cancelId} скасовано. Причина: {reason}");
+                            
                         }
                         else
                         {
@@ -556,7 +557,6 @@ internal class Program
                         if (clinic.Appointments.Complete(completeId))
                         {
                             Console.WriteLine($"Запис [{completeId}] завершено.");
-                            clinic.Logger.LogInfo($"Запис #{completeId} завершено.");
                         }
                         else
                         {
@@ -580,11 +580,11 @@ internal class Program
                             Appointment[] patientAppointments =
                                 clinic.Appointments.GetByPatient(patientIdToCancel);
 
-                            int cancelledCount = AppointmentManager.CancelAll(
+                            int cancelledCount = clinic.Appointments.CancelAll(
                                 patientAppointments, cancellationReason);
 
                             Console.WriteLine($"Скасовано записів: {cancelledCount}");
-                            clinic.Logger.LogInfo($"Скасовано всі записи пацієнта #{patientIdToCancel}: {cancelledCount}");
+                           
                             break;
                         }
                     case "9":
@@ -911,7 +911,6 @@ internal class Program
                             if (clinic.Billing.PayAppointment(recordId))
                             {
                                 Console.WriteLine($"Запис [{recordId}] оплачено.");
-                                clinic.Logger.LogInfo($"Запис #{recordId} оплачено.");
                             }
                             else
                             {
@@ -1251,7 +1250,7 @@ internal class Program
             }
             else if (choice == "5")
             {
-                success = plan.Complete();
+                success = clinic.TreatmentPlans.Complete(planId);
                 action = "завершити";
             }
             else
