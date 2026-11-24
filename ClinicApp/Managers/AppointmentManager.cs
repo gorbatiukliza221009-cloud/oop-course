@@ -1,5 +1,6 @@
 ﻿using ClinicApp.Models;
 using ClinicApp.Interfaces;
+using ClinicApp.Events;
 using System;
 
 namespace ClinicApp.Managers
@@ -11,6 +12,7 @@ namespace ClinicApp.Managers
         private int _count = 0;
         private PatientManager _patients;
         private DoctorManager _doctors;
+        public event EventHandler<AppointmentEventArgs>? AppointmentBooked;
 
         public int Count
         {
@@ -110,10 +112,19 @@ namespace ClinicApp.Managers
             _count++;
 
             Console.WriteLine(
-                $"Запис на прийом [{appointment.Id}] " +
-                $"для пацієнта [{patient.FullName}] " +
-                $"до лікаря [{doctor.FullName}] " +
-                $"заплановано на {appointment.ScheduledAt:dd.MM.yyyy HH:mm}.");
+    $"Запис на прийом [{appointment.Id}] " +
+    $"для пацієнта [{patient.FullName}] " +
+    $"до лікаря [{doctor.FullName}] " +
+    $"заплановано на {appointment.ScheduledAt:dd.MM.yyyy HH:mm}.");
+
+            AppointmentEventArgs args = new AppointmentEventArgs(
+                appointment.Id,
+                appointment.PatientId,
+                appointment.DoctorId,
+                appointment.ScheduledAt,
+                appointment.Notes);
+
+            AppointmentBooked?.Invoke(this, args);
 
             return true;
         }

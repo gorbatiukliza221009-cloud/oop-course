@@ -4,7 +4,7 @@ using ClinicApp.Interfaces;
 using ClinicApp.Managers;
 using ClinicApp.Models;
 using ClinicApp.Utils;
-
+using ClinicApp.Events;
 namespace ClinicApp;
 
 internal class Program
@@ -1737,5 +1737,12 @@ internal class Program
         Console.ReadLine();
 
         MainMenu(clinic);
+    }
+    static void OnAppointmentBookedConsole(object? sender, AppointmentEventArgs e)
+    {
+        Console.WriteLine(
+            $"  [EVENT] Запис #{e.AppointmentId} створено: " +
+            $"пацієнт #{e.PatientId} → лікар #{e.DoctorId}, " +
+            $"{e.ScheduledAt:dd.MM.yyyy HH:mm}");
     }
 }
