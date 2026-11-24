@@ -1,4 +1,5 @@
-﻿using ClinicApp.Models;
+﻿using System.Linq;
+using ClinicApp.Models;
 
 namespace ClinicApp.Managers;
 
@@ -22,28 +23,23 @@ public class AnalyticsManager
         Doctor[] doctors = _doctors.GetAll();
         Appointment[] appointments = _appointments.GetAll();
 
-        foreach (Doctor doctor in doctors)
+        return doctors.Select(d =>
         {
-            int count = 0;
-            decimal revenue = 0m;
-            DateTime last = DateTime.MinValue;
+            Appointment[] own = appointments
+                .Where(a => a.DoctorId == d.Id)
+                .ToArray();
 
-            foreach (Appointment appointment in appointments)
-            {
-                if (appointment.DoctorId != doctor.Id)
-                    continue;
+            DateTime last = own.Any()
+                ? own.Max(a => a.ScheduledAt)
+                : DateTime.MinValue;
 
-                count++;
-                revenue += appointment.GetCost();
-
-                if (appointment.ScheduledAt > last)      // ← назва дати
-                    last = appointment.ScheduledAt;
-            }
-
-
-            yield return new DoctorStats(doctor.Id, doctor.FullName,
-                                         count, revenue, last);
-        }
+            return new DoctorStats(
+                d.Id,
+                d.FullName,
+                own.Count(),
+                own.Sum(a => a.GetCost()),
+                last);
+        });
     }
 
     public IEnumerable<PatientStats> ComputePatientStats()
@@ -51,26 +47,22 @@ public class AnalyticsManager
         Patient[] patients = _patients.GetAll();
         Appointment[] appointments = _appointments.GetAll();
 
-        foreach (Patient patient in patients)
+        return patients.Select(p =>
         {
-            int count = 0;
-            decimal spent = 0m;
-            DateTime last = DateTime.MinValue;
+            Appointment[] own = appointments
+                .Where(a => a.PatientId == p.Id)
+                .ToArray();
 
-            foreach (Appointment appointment in appointments)
-            {
-                if (appointment.PatientId != patient.Id)
-                    continue;
+            DateTime last = own.Any()
+                ? own.Max(a => a.ScheduledAt)
+                : DateTime.MinValue;
 
-                count++;
-                spent += appointment.GetCost();
-
-                if (appointment.ScheduledAt > last)      // ← назва дати
-                    last = appointment.ScheduledAt;
-            }
-
-            yield return new PatientStats(patient.Id, patient.FullName,
-                                          count, spent, last);
-        }
+            return new PatientStats(
+                p.Id,
+                p.FullName,
+                own.Count(),
+                own.Sum(a => a.GetCost()),
+                last);
+        });
     }
 }

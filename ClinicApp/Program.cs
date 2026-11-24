@@ -1390,6 +1390,7 @@ internal class Program
                 Console.WriteLine("║" + "  8. Аналітика      — рейтинги, звіти".PadRight(46) + "║");
                 Console.WriteLine("║" + "  9. Плани лікування — рефлексія, атрибути".PadRight(46) + "║");
                 Console.WriteLine("║" + "  10. Файли         — лог, звіти, імпорт".PadRight(46) + "║");
+                Console.WriteLine("║" + "  11. Звіти         — LINQ-звіти, топ".PadRight(46) + "║");
                 Console.WriteLine("║" + "  0. Вийти".PadRight(46) + "║");
                 Console.WriteLine("╚══════════════════════════════════════════════╝");
                 Console.Write("Оберіть розділ: ");
@@ -1437,6 +1438,10 @@ internal class Program
 
                     case "10":
                         FilesMenu(clinic);
+                        break;
+
+                    case "11":
+                        ReportsMenu(clinic);
                         break;
 
                     case "0":
@@ -1746,5 +1751,147 @@ internal class Program
             $"  [EVENT] Запис #{e.AppointmentId} створено: " +
             $"пацієнт #{e.PatientId} → лікар #{e.DoctorId}, " +
             $"{e.ScheduledAt:dd.MM.yyyy HH:mm}");
+    }
+    static void ReportsMenu(Clinic clinic)
+    {
+        while (true)
+        {
+            Console.WriteLine("\n── Звіти ───────────────────────");
+            Console.WriteLine("  1. Спеціальності");
+            Console.WriteLine("  2. Найзавантаженіший лікар");
+            Console.WriteLine("  3. Пацієнти з кількома візитами");
+            Console.WriteLine("  4. Топ-3 лікарів за виручкою");
+            Console.WriteLine("  5. Чи є термінові записи");
+            Console.WriteLine("  6. Активні спеціальності");
+            Console.WriteLine("  7. Виручка по місяцях");
+            Console.WriteLine("  0. Назад");
+            Console.Write("Оберіть: ");
+
+            string choice = Console.ReadLine()!;
+
+            switch (choice)
+            {
+                case "1":
+                    {
+                        SpecialityReport[] reports =
+                            clinic.Reports.GetSpecialityStats().ToArray();
+
+                        if (reports.Length == 0)
+                        {
+                            Console.WriteLine("Немає лікарів.");
+                            break;
+                        }
+
+                        foreach (SpecialityReport report in reports)
+                        {
+                            Console.WriteLine($"  {report}");
+                        }
+                        break;
+                    }
+
+                case "2":
+                    {
+                        string? name = clinic.Reports.FindBusiestDoctorName();
+                        Console.WriteLine(
+                            $"Найзавантаженіший лікар: {name ?? "немає лікарів"}");
+                        break;
+                    }
+
+                case "3":
+                    {
+                        Console.Write("Мінімальна кількість візитів: ");
+
+                        if (!int.TryParse(Console.ReadLine(), out int minVisits) || minVisits <= 0)
+                        {
+                            Console.WriteLine("Помилка: введіть додатне ціле число.");
+                            break;
+                        }
+
+                        string[] names =
+                            clinic.Reports.GetPatientsWithMultipleVisits(minVisits).ToArray();
+
+                        if (names.Length == 0)
+                        {
+                            Console.WriteLine("Таких пацієнтів немає.");
+                            break;
+                        }
+
+                        foreach (string patientName in names)
+                        {
+                            Console.WriteLine($"  {patientName}");
+                        }
+                        break;
+                    }
+
+                case "4":
+                    {
+                        DoctorStats[] top = clinic.Reports.GetTopEarners(3).ToArray();
+
+                        if (top.Length == 0)
+                        {
+                            Console.WriteLine("Немає лікарів.");
+                            break;
+                        }
+
+                        for (int i = 0; i < top.Length; i++)
+                        {
+                            Console.WriteLine(
+                                $"  {i + 1}. {top[i].FullName} — {top[i].TotalRevenue:F2} грн");
+                        }
+                        break;
+                    }
+
+                case "5":
+                    Console.WriteLine(
+                        clinic.Reports.HasAnyUrgentAppointments()
+                            ? "Термінові записи: Так"
+                            : "Термінові записи: Ні");
+                    break;
+
+                case "6":
+                    {
+                        Speciality[] specialities =
+                            clinic.Reports.GetActiveSpecialities().ToArray();
+
+                        if (specialities.Length == 0)
+                        {
+                            Console.WriteLine("Немає лікарів.");
+                            break;
+                        }
+
+                        foreach (Speciality speciality in specialities)
+                        {
+                            Console.WriteLine($"  {ClinicFormatter.FormatSpeciality(speciality)}");
+                        }
+                        break;
+                    }
+
+                case "7":
+                    {
+                        (int Year, int Month, decimal Total)[] months =
+                            clinic.Reports.GetMonthlyRevenue().ToArray();
+
+                        if (months.Length == 0)
+                        {
+                            Console.WriteLine("Немає записів на прийом.");
+                            break;
+                        }
+
+                        foreach ((int Year, int Month, decimal Total) month in months)
+                        {
+                            Console.WriteLine(
+                                $"  {month.Year}/{month.Month.ToString("D2")} — {month.Total:F2} грн");
+                        }
+                        break;
+                    }
+
+                case "0":
+                    return;
+
+                default:
+                    Console.WriteLine("Невідомий пункт меню.");
+                    break;
+            }
+        }
     }
 }
