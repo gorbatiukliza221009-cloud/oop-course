@@ -19,6 +19,7 @@ namespace ClinicApp
         public ClinicLogger Logger { get; }
         public ClinicExporter Exporter { get; }
         public SessionManager Session { get; }
+        public PatientPassportWriter Passport { get; }
 
         public Clinic(string name)
         {
@@ -34,6 +35,8 @@ namespace ClinicApp
             Logger = new ClinicLogger();
             Exporter = new ClinicExporter(this);
             Session = new SessionManager();
+            Session = new SessionManager();
+            Passport = new PatientPassportWriter(this);
             SubscribeEvents();
         }
         private void SubscribeEvents()
@@ -48,6 +51,10 @@ namespace ClinicApp
             Billing.PaymentReceived += Logger.OnPaymentReceived;
 
             TreatmentPlans.PlanCompleted += Logger.OnPlanCompleted;
+
+            Patients.PatientAdded += Passport.OnPatientAdded;
+            Appointments.AppointmentCompleted += Passport.OnAppointmentCompleted;
+            TreatmentPlans.PlanCompleted += Passport.OnPlanCompleted;
         }
 
         public void DisplaySchedule(DateTime date)
