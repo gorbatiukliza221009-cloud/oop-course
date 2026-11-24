@@ -16,6 +16,12 @@ desktop.ini
 # Конфіденційні дані
 *.env
 appsettings.Development.json
-secrets.json*.log
+secrets.json
+
+# Згенеровані файли ClinicApp
+*.log
 reports/
 session.dat
+alerts/
+patients/
+session_summary.txt

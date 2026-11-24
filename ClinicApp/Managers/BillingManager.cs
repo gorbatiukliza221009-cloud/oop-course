@@ -1,5 +1,6 @@
 ﻿using ClinicApp.Interfaces;
 using ClinicApp.Models;
+using ClinicApp.Events;
 using System;
 
 namespace ClinicApp.Managers;
@@ -7,6 +8,7 @@ namespace ClinicApp.Managers;
 public class BillingManager
 {
     private readonly AppointmentManager _appointments;
+    public event EventHandler<PaymentEventArgs>? PaymentReceived;
 
     public BillingManager(AppointmentManager appointments)
     {
@@ -86,6 +88,10 @@ public class BillingManager
                 }
 
                 appointment.MarkPaid();
+
+                PaymentReceived?.Invoke(this,
+                    new PaymentEventArgs(appointment.Id, appointment.GetCost()));
+
                 return true;
             }
         }

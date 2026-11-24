@@ -1,5 +1,6 @@
 ﻿using ClinicApp.Models;
 using ClinicApp.Interfaces;
+using ClinicApp.Events;
 using System;
 
 namespace ClinicApp.Managers
@@ -11,6 +12,10 @@ namespace ClinicApp.Managers
         private int _count = 0;
         private PatientManager _patients;
         private DoctorManager _doctors;
+        public event EventHandler<AppointmentEventArgs>? AppointmentBooked;
+        public event EventHandler<AppointmentEventArgs>? AppointmentCancelled;
+        public event EventHandler<AppointmentEventArgs>? AppointmentCompleted;
+        public event EventHandler<AppointmentEventArgs>? UrgentAppointmentBooked;
 
         public int Count
         {
@@ -33,7 +38,7 @@ namespace ClinicApp.Managers
 
             return result;
         }
-        public static int CancelAll(ICancellable[] items, string reason = "")
+        public int CancelAll(ICancellable[] items, string reason = "")
         {
             int cancelledCount = 0;
 
@@ -42,6 +47,11 @@ namespace ClinicApp.Managers
                 if (item.Cancel(reason))
                 {
                     cancelledCount++;
+
+                    if (item is Appointment appointment)
+                    {
+                        AppointmentCancelled?.Invoke(this, CreateArgs(appointment, reason));
+                    }
                 }
             }
 
@@ -58,15 +68,24 @@ namespace ClinicApp.Managers
         }
 
         public bool BookUrgent(
-            int patientId,
-            int doctorId,
-            DateTime scheduledAt,
-            string urgencyNote = "",
-            int durationMinutes = 30)
+    int patientId,
+    int doctorId,
+    DateTime scheduledAt,
+    string urgencyNote = "",
+    int durationMinutes = 30)
         {
-            return AddAppointment(new UrgentAppointment(
+            UrgentAppointment appointment = new UrgentAppointment(
                 patientId, doctorId, scheduledAt,
-                urgencyNote, durationMinutes));
+                urgencyNote, durationMinutes);
+
+            bool added = AddAppointment(appointment);
+
+            if (added)
+            {
+                UrgentAppointmentBooked?.Invoke(this, CreateArgs(appointment, urgencyNote));
+            }
+
+            return added;
         }
 
         public bool BookSpecialist(
@@ -80,7 +99,13 @@ namespace ClinicApp.Managers
                 patientId, doctorId, scheduledAt,
                 topic, durationMinutes));
         }
-
+        private AppointmentEventArgs CreateArgs(Appointment appointment, string notes) =>
+    new AppointmentEventArgs(
+        appointment.Id,
+        appointment.PatientId,
+        appointment.DoctorId,
+        appointment.ScheduledAt,
+        notes);
         private bool AddAppointment(Appointment appointment)
         {
             if (_count >= MaxAppointments)
@@ -110,10 +135,19 @@ namespace ClinicApp.Managers
             _count++;
 
             Console.WriteLine(
-                $"Запис на прийом [{appointment.Id}] " +
-                $"для пацієнта [{patient.FullName}] " +
-                $"до лікаря [{doctor.FullName}] " +
-                $"заплановано на {appointment.ScheduledAt:dd.MM.yyyy HH:mm}.");
+    $"Запис на прийом [{appointment.Id}] " +
+    $"для пацієнта [{patient.FullName}] " +
+    $"до лікаря [{doctor.FullName}] " +
+    $"заплановано на {appointment.ScheduledAt:dd.MM.yyyy HH:mm}.");
+
+            AppointmentEventArgs args = new AppointmentEventArgs(
+                appointment.Id,
+                appointment.PatientId,
+                appointment.DoctorId,
+                appointment.ScheduledAt,
+                appointment.Notes);
+
+            AppointmentBooked?.Invoke(this, args);
 
             return true;
         }
@@ -141,15 +175,25 @@ namespace ClinicApp.Managers
             if (appointment == null)
                 return false;
 
-            return appointment.Cancel(reason);
+            if (!appointment.Cancel(reason))
+                return false;
+
+            AppointmentCancelled?.Invoke(this, CreateArgs(appointment, reason));
+            return true;
         }
 
         public bool Complete(int id)
         {
             Appointment? appointment = FindById(id);
+
             if (appointment == null)
                 return false;
-            return appointment.Complete();
+
+            if (!appointment.Complete())
+                return false;
+
+            AppointmentCompleted?.Invoke(this, CreateArgs(appointment, appointment.Notes));
+            return true;
         }
 
         public Appointment[] GetByPatient(int patientId)
