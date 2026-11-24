@@ -21,7 +21,7 @@ namespace ClinicApp
         public SessionManager Session { get; }
         public PatientPassportWriter Passport { get; }
         public SessionEventTracker Tracker { get; }
-
+        public ReportManager Reports { get; }
         public Clinic(string name)
         {
             Name = name;
@@ -32,6 +32,7 @@ namespace ClinicApp
             MedicalRecords = new MedicalRecordManager();
             WaitingRoom = new WaitingQueue<Patient>();
             Analytics = new AnalyticsManager(Appointments, Doctors, Patients);
+            Reports = new ReportManager(Appointments, Doctors, Patients);
             TreatmentPlans = new TreatmentPlanManager();
             Logger = new ClinicLogger();
             Exporter = new ClinicExporter(this);
