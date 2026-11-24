@@ -22,6 +22,7 @@ namespace ClinicApp
         public PatientPassportWriter Passport { get; }
         public SessionEventTracker Tracker { get; }
         public ReportManager Reports { get; }
+        public AppointmentPipeline Pipeline { get; }
         public Clinic(string name)
         {
             Name = name;
@@ -39,6 +40,7 @@ namespace ClinicApp
             Session = new SessionManager();
             Passport = new PatientPassportWriter(this);
             Tracker = new SessionEventTracker(this);
+            Pipeline = new AppointmentPipeline();
             SubscribeEvents();
         }
         private void SubscribeEvents()
